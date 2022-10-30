@@ -1,5 +1,5 @@
 Baky hola;
-
+var boolean j;
 Baky()
 var int j, i;
 {

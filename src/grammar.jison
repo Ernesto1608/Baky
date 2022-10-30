@@ -1,4 +1,9 @@
 %lex
+%{
+    if (!yy.isReady) {
+        yy.isReady = true;
+    }
+%}
 %%
 
 "Baky" { return "BAKY"; }
@@ -48,14 +53,15 @@
 "<" { return "LESS_THAN"; }
 ">" { return "GREATER_THAN"; }
 
-[a-zA-z]\w* { return "ID"; }
-[+-][0-9]+\.[0-9]+ { return "DOUBLE_VALUE"; }
-[+-]?[0-9]+ { return "INT_VALUE"; }
-\".*\" { return "STRING_VALUE"; }
-\'.\' { return "CHAR_VALUE"; }
 (true|false) { return "BOOLEAN_VALUE"; }
+[+-]?[0-9]+\.[0-9]+ { return "DOUBLE_VALUE"; }
+[+-]?[0-9]+ { return "INT_VALUE"; }
+\"[^\"]*\" { return "STRING_VALUE"; }
+\'.\' { return "CHAR_VALUE"; }
+[a-zA-z]\w* { return "ID"; }
 
-(\n|\t|\s|.) {}
+(\n|\t|\s) {}
+. {throw new Error("Unsupported symbols on line " + yylineno); }
 
 /lex
 
