@@ -1,5 +1,34 @@
-Baky hola;
-var boolean j;
+Baky programa;
+
+var boolean j, i, r[10], n[12][12];
+var int r;
+var double p[10];
+
+function void nada (int r, int j[], double m[][])
+var char s;
+var string n[10];
+{   
+    if(r > 10){
+        read(p,m);
+    } else {
+        write("hola",n);
+    }
+
+    if(true){}
+    s = (n);
+}
+
+function int nada (int r, int j[], double m[][])
+var char s;
+var string n[10];
+{
+    nada(r,j,m[10][20]);
+    s = (n);
+    while(j*2+1 != 123) {}
+    from int i = 0 to n do {}
+    return s;
+}
+
 Baky()
 var int j, i;
 {

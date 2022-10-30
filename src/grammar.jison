@@ -2,6 +2,7 @@
 %{
     if (!yy.isReady) {
         yy.isReady = true;
+        yy.mylineno = 1;
     }
 %}
 %%
@@ -59,9 +60,9 @@
 \"[^\"]*\" { return "STRING_VALUE"; }
 \'.\' { return "CHAR_VALUE"; }
 [a-zA-z]\w* { return "ID"; }
-
-(\n|\t|\s) {}
-. {throw new Error("Unsupported symbols on line " + yylineno); }
+\n {yy.mylineno++;}
+(\t|\s) {}
+. {throw new Error("Unsupported symbols on line " + yy.mylineno); }
 
 /lex
 
@@ -172,7 +173,7 @@ while:
     WHILE OPEN_PARENTHESIS exp CLOSE_PARENTHESIS block;
 
 for:
-    FROM INT ID EQUAL exp TO exp do block;
+    FROM INT ID EQUAL exp TO exp DO block;
 
 exp:
     superexp |

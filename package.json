@@ -1,5 +1,14 @@
 {
+  "name": "Baky",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "repository": "https://github.com/Ernesto1608/Baky.git",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/index.js"
+  },
   "dependencies": {
     "jison": "^0.4.18"
   }
 }
+
