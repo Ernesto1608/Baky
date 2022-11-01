@@ -3,6 +3,8 @@
     if (!yy.isReady) {
         yy.isReady = true;
         yy.mylineno = 1;
+        const { semantics } = yy.data;
+        yy.semantics = semantics;
     }
 %}
 %%
@@ -70,8 +72,62 @@
 
 %%
 
+//Neuralgic points definition 
+@createProgram: {
+    yy.semantics.globalName = $1;
+    yy.semantics.createFunction($1, yy.mylineno);
+};
+
+@createFunction: {
+    if($0 == "void") yy.semantics.currentType = "VOID";
+    yy.semantics.createFunction($1, yy.mylineno);
+};
+
+@validateFunction: {
+    yy.semantics.validateFunction($0, yy.mylineno);
+};
+
+@popScope: {
+    yy.semantics.scopeStack.pop();
+};
+
+@createVariable: {
+    yy.semantics.createVariable($1, yy.mylineno);
+};
+
+@createVariableArray: {
+    yy.semantics.createVariableArray($-2, yy.mylineno, "ARRAY", [$0]);
+};
+
+@createVariableArrayParam: {
+    yy.semantics.createVariableArray($-1, yy.mylineno, "ARRAY", []);
+};
+
+@createVariableMatrix: {
+    yy.semantics.createVariableArray($-5, yy.mylineno, "MATRIX", [$-3, $0]);
+};
+
+@createVariableMatrixParam: {
+    yy.semantics.createVariableArray($-3, yy.mylineno, "MATRIX", []);
+};
+
+@validateVariable: {
+    yy.semantics.validateVariable($1, yy.mylineno, "");
+};
+
+@validateArray: {
+    yy.semantics.validateVariable($-2, yy.mylineno, "ARRAY");
+};
+
+@validateMatrix: {
+    yy.semantics.validateVariable($-5, yy.mylineno, "MATRIX");
+};
+
 baky:
-    BAKY ID SEMICOLON vars funcs main;
+    BAKY ID @createProgram SEMICOLON vars funcs main {
+        console.log(JSON.stringify(yy.semantics.functionsTable, null, 4));
+        console.log(`Successful compilation of program ${yy.semantics.globalName}`);
+    };
 
 vars: |
     vars_aux vars;
@@ -80,31 +136,31 @@ vars_aux:
     VAR type vars_aux2 SEMICOLON;
 
 vars_aux2:
-    ID |
-    ID COMA vars_aux2 |
-    ID OPEN_SQUARE_BRACKET INT_VALUE CLOSE_SQUARE_BRACKET |
-    ID OPEN_SQUARE_BRACKET INT_VALUE CLOSE_SQUARE_BRACKET COMA vars_aux2 |
+    ID @createVariable |
+    ID @createVariable COMA vars_aux2 |
+    ID OPEN_SQUARE_BRACKET INT_VALUE CLOSE_SQUARE_BRACKET @createVariableArray |
+    ID OPEN_SQUARE_BRACKET INT_VALUE CLOSE_SQUARE_BRACKET @createVariableArray COMA vars_aux2 |
     ID OPEN_SQUARE_BRACKET INT_VALUE CLOSE_SQUARE_BRACKET
-        OPEN_SQUARE_BRACKET INT_VALUE CLOSE_SQUARE_BRACKET |
+        OPEN_SQUARE_BRACKET INT_VALUE CLOSE_SQUARE_BRACKET @createVariableMatrix |
     ID OPEN_SQUARE_BRACKET INT_VALUE CLOSE_SQUARE_BRACKET
-        OPEN_SQUARE_BRACKET INT_VALUE CLOSE_SQUARE_BRACKET COMA vars_aux2;
+        OPEN_SQUARE_BRACKET INT_VALUE CLOSE_SQUARE_BRACKET @createVariableMatrix COMA vars_aux2;
 
 funcs: |
     function funcs;
 
 main:
-    BAKY OPEN_PARENTHESIS CLOSE_PARENTHESIS vars block;
+    VOID BAKY @createFunction OPEN_PARENTHESIS CLOSE_PARENTHESIS vars block;
 
 type:
-    INT |
-    DOUBLE |
-    CHAR |
-    STRING |
-    BOOLEAN;
+    INT {yy.semantics.currentType = "INT";} |
+    DOUBLE {yy.semantics.currentType = "DOUBLE";} |
+    CHAR {yy.semantics.currentType = "CHAR";} |
+    STRING {yy.semantics.currentType = "STRING";} |
+    BOOLEAN {yy.semantics.currentType = "BOOLEAN";};
 
 function:
-    FUNCTION type ID OPEN_PARENTHESIS params CLOSE_PARENTHESIS vars block |
-    FUNCTION VOID ID OPEN_PARENTHESIS params CLOSE_PARENTHESIS vars block;
+    FUNCTION type ID @createFunction OPEN_PARENTHESIS params CLOSE_PARENTHESIS vars block @popScope |
+    FUNCTION VOID ID @createFunction OPEN_PARENTHESIS params CLOSE_PARENTHESIS vars block @popScope;
 
 block:
     OPEN_CURLY_BRACKET block_aux CLOSE_CURLY_BRACKET;
@@ -116,14 +172,14 @@ params: |
     params_aux;
 
 params_aux:
-    type ID |
-    type ID COMA params_aux |
-    type ID OPEN_SQUARE_BRACKET CLOSE_SQUARE_BRACKET |
-    type ID OPEN_SQUARE_BRACKET CLOSE_SQUARE_BRACKET COMA params_aux |
+    type ID @createVariable |
+    type ID @createVariable COMA params_aux |
+    type ID OPEN_SQUARE_BRACKET CLOSE_SQUARE_BRACKET @createVariableArrayParam |
+    type ID OPEN_SQUARE_BRACKET CLOSE_SQUARE_BRACKET @createVariableArrayParam COMA params_aux |
     type ID OPEN_SQUARE_BRACKET CLOSE_SQUARE_BRACKET
-        OPEN_SQUARE_BRACKET CLOSE_SQUARE_BRACKET |
+        OPEN_SQUARE_BRACKET CLOSE_SQUARE_BRACKET @createVariableMatrixParam |
     type ID OPEN_SQUARE_BRACKET CLOSE_SQUARE_BRACKET
-        OPEN_SQUARE_BRACKET CLOSE_SQUARE_BRACKET COMA params_aux;
+        OPEN_SQUARE_BRACKET CLOSE_SQUARE_BRACKET @createVariableMatrixParam COMA params_aux;
 
 statute:
     call |
@@ -136,8 +192,8 @@ statute:
     for;
 
 call:
-    ID OPEN_PARENTHESIS CLOSE_PARENTHESIS SEMICOLON |
-    ID OPEN_PARENTHESIS call_aux CLOSE_PARENTHESIS SEMICOLON;
+    ID OPEN_PARENTHESIS @validateFunction CLOSE_PARENTHESIS SEMICOLON |
+    ID OPEN_PARENTHESIS @validateFunction call_aux CLOSE_PARENTHESIS SEMICOLON;
 
 call_aux:
     exp |
@@ -173,17 +229,17 @@ while:
     WHILE OPEN_PARENTHESIS exp CLOSE_PARENTHESIS block;
 
 for:
-    FROM INT ID EQUAL exp TO exp DO block;
+    FROM ID @validateVariable TO exp DO block;
 
 exp:
     superexp |
     superexp OR exp;
 
 var:
-    ID |
-    ID OPEN_SQUARE_BRACKET exp CLOSE_SQUARE_BRACKET |
+    ID @validateVariable |
+    ID OPEN_SQUARE_BRACKET exp CLOSE_SQUARE_BRACKET @validateArray |
     ID OPEN_SQUARE_BRACKET exp CLOSE_SQUARE_BRACKET
-        OPEN_SQUARE_BRACKET exp CLOSE_SQUARE_BRACKET;
+        OPEN_SQUARE_BRACKET exp CLOSE_SQUARE_BRACKET @validateMatrix;
 
 superexp:
     megaexp |

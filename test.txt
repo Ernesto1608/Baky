@@ -1,7 +1,7 @@
 Baky programa;
 
 var boolean j, i, r[10], n[12][12];
-var int r;
+var int m;
 var double p[10];
 
 function void nada (int r, int j[], double m[][])
@@ -9,30 +9,28 @@ var char s;
 var string n[10];
 {   
     if(r > 10){
-        read(p,m);
+        read(p[1],m[2][4]);
     } else {
-        write("hola",n);
+        write("hola",n[1]);
     }
-
     if(true){}
-    s = (n);
+    i = (n[2]);
 }
 
-function int nada (int r, int j[], double m[][])
+function int nadar (int r, int j[], double m[][])
 var char s;
 var string n[10];
 {
-    nada(r,j,m[10][20]);
-    s = (n);
-    while(j*2+1 != 123) {}
-    from int i = 0 to n do {}
+    nada(r,j[2],m[10][20]);
+    s = (n[0]);
+    while(j[0]*2+1 != 123) {}
+    from i to n[3] do {}
     return s;
 }
 
-Baky()
+void Baky()
 var int j, i;
 {
 
     return "hola";
-
 }
