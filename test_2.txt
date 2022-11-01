@@ -1,0 +1,11 @@
+Baky programa;
+
+var boolean j, i, r[10], n[12][12];
+var int m;
+var double p[10];
+
+void Baky()
+var int j, i;
+{
+    if(j+2*2-6/8*(j/i)){}
+}

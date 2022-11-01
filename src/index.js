@@ -9,6 +9,7 @@ const parser = new Parser(grammar, { debug: false });
 const quadruple = new Quadruple();
 const semantics = new Semantics();
 parser.yy.data = {
-    semantics
+    semantics,
+    quadruple
 };
-parser.parse(readFileSync('./test.txt', "utf-8"));
+parser.parse(readFileSync('./test_2.txt', "utf-8"));

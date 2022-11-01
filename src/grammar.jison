@@ -3,8 +3,9 @@
     if (!yy.isReady) {
         yy.isReady = true;
         yy.mylineno = 1;
-        const { semantics } = yy.data;
+        const { semantics, quadruple } = yy.data;
         yy.semantics = semantics;
+        yy.quadruple = quadruple;
     }
 %}
 %%
@@ -88,7 +89,8 @@
 };
 
 @popScope: {
-    yy.semantics.scopeStack.pop();
+    let currentScope = yy.semantics.scopeStack.pop();
+    // yy.semantics.functionsTable[currentScope].variablesTable = {};
 };
 
 @createVariable: {
@@ -125,6 +127,7 @@
 
 baky:
     BAKY ID @createProgram SEMICOLON vars funcs main {
+        // yy.semantics.functionsTable = {};
         console.log(JSON.stringify(yy.semantics.functionsTable, null, 4));
         console.log(`Successful compilation of program ${yy.semantics.globalName}`);
     };
@@ -149,7 +152,7 @@ funcs: |
     function funcs;
 
 main:
-    VOID BAKY @createFunction OPEN_PARENTHESIS CLOSE_PARENTHESIS vars block;
+    VOID BAKY @createFunction OPEN_PARENTHESIS CLOSE_PARENTHESIS vars block @popScope;
 
 type:
     INT {yy.semantics.currentType = "INT";} |
@@ -243,7 +246,7 @@ var:
 
 superexp:
     megaexp |
-    megaexp && superexp;
+    megaexp AND superexp;
 
 megaexp:
     hiperexp |
@@ -251,8 +254,8 @@ megaexp:
 
 hiperexp:
     term |
-    term PLUS hiperexp |
-    term MINUS hiperexp;
+    hiperexp PLUS term |
+    hiperexp MINUS term;
 
 comp:
     LESS_THAN |
@@ -264,8 +267,8 @@ comp:
 
 term:
     factor |
-    factor TIMES term |
-    factor DIVIDED term;
+    term TIMES factor |
+    term DIVIDED factor;
 
 factor:
     OPEN_PARENTHESIS exp CLOSE_PARENTHESIS |

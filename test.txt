@@ -8,7 +8,7 @@ function void nada (int r, int j[], double m[][])
 var char s;
 var string n[10];
 {   
-    if(r > 10){
+    if(r > 10 || j[1] < 8){
         read(p[1],m[2][4]);
     } else {
         write("hola",n[1]);
