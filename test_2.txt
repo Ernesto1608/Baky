@@ -7,5 +7,5 @@ var double p[10];
 void Baky()
 var int j, i;
 {
-    if(j+2*2-6/8*(j/i)){}
+    if(j+2.5*2-6/8*(j/i)){}
 }

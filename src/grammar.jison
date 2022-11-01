@@ -3,8 +3,7 @@
     if (!yy.isReady) {
         yy.isReady = true;
         yy.mylineno = 1;
-        const { semantics, quadruple } = yy.data;
-        yy.semantics = semantics;
+        const { quadruple } = yy.data;
         yy.quadruple = quadruple;
     }
 %}
@@ -75,61 +74,61 @@
 
 //Neuralgic points definition 
 @createProgram: {
-    yy.semantics.globalName = $1;
-    yy.semantics.createFunction($1, yy.mylineno);
+    yy.quadruple.semantics.globalName = $1;
+    yy.quadruple.semantics.createFunction($1, yy.mylineno);
 };
 
 @createFunction: {
-    if($0 == "void") yy.semantics.currentType = "VOID";
-    yy.semantics.createFunction($1, yy.mylineno);
+    if($0 == "void") yy.quadruple.semantics.currentType = "VOID";
+    yy.quadruple.semantics.createFunction($1, yy.mylineno);
 };
 
 @validateFunction: {
-    yy.semantics.validateFunction($0, yy.mylineno);
+    yy.quadruple.semantics.validateFunction($0, yy.mylineno);
 };
 
 @popScope: {
-    let currentScope = yy.semantics.scopeStack.pop();
-    // yy.semantics.functionsTable[currentScope].variablesTable = {};
+    let currentScope = yy.quadruple.semantics.scopeStack.pop();
+    // yy.quadruple.semantics.functionsTable[currentScope].variablesTable = {};
 };
 
 @createVariable: {
-    yy.semantics.createVariable($1, yy.mylineno);
+    yy.quadruple.semantics.createVariable($1, yy.mylineno);
 };
 
 @createVariableArray: {
-    yy.semantics.createVariableArray($-2, yy.mylineno, "ARRAY", [$0]);
+    yy.quadruple.semantics.createVariableArray($-2, yy.mylineno, "ARRAY", [$0]);
 };
 
 @createVariableArrayParam: {
-    yy.semantics.createVariableArray($-1, yy.mylineno, "ARRAY", []);
+    yy.quadruple.semantics.createVariableArray($-1, yy.mylineno, "ARRAY", []);
 };
 
 @createVariableMatrix: {
-    yy.semantics.createVariableArray($-5, yy.mylineno, "MATRIX", [$-3, $0]);
+    yy.quadruple.semantics.createVariableArray($-5, yy.mylineno, "MATRIX", [$-3, $0]);
 };
 
 @createVariableMatrixParam: {
-    yy.semantics.createVariableArray($-3, yy.mylineno, "MATRIX", []);
+    yy.quadruple.semantics.createVariableArray($-3, yy.mylineno, "MATRIX", []);
 };
 
 @validateVariable: {
-    yy.semantics.validateVariable($1, yy.mylineno, "");
+    yy.quadruple.semantics.validateVariable($1, yy.mylineno, "");
 };
 
 @validateArray: {
-    yy.semantics.validateVariable($-2, yy.mylineno, "ARRAY");
+    yy.quadruple.semantics.validateVariable($-2, yy.mylineno, "ARRAY");
 };
 
 @validateMatrix: {
-    yy.semantics.validateVariable($-5, yy.mylineno, "MATRIX");
+    yy.quadruple.semantics.validateVariable($-5, yy.mylineno, "MATRIX");
 };
 
 baky:
     BAKY ID @createProgram SEMICOLON vars funcs main {
-        // yy.semantics.functionsTable = {};
-        console.log(JSON.stringify(yy.semantics.functionsTable, null, 4));
-        console.log(`Successful compilation of program ${yy.semantics.globalName}`);
+        // yy.quadruple.semantics.functionsTable = {};
+        console.log(JSON.stringify(yy.quadruple.semantics.functionsTable, null, 4));
+        console.log(`Successful compilation of program ${yy.quadruple.semantics.globalName}`);
     };
 
 vars: |
@@ -155,11 +154,11 @@ main:
     VOID BAKY @createFunction OPEN_PARENTHESIS CLOSE_PARENTHESIS vars block @popScope;
 
 type:
-    INT {yy.semantics.currentType = "INT";} |
-    DOUBLE {yy.semantics.currentType = "DOUBLE";} |
-    CHAR {yy.semantics.currentType = "CHAR";} |
-    STRING {yy.semantics.currentType = "STRING";} |
-    BOOLEAN {yy.semantics.currentType = "BOOLEAN";};
+    INT {yy.quadruple.semantics.currentType = "INT";} |
+    DOUBLE {yy.quadruple.semantics.currentType = "DOUBLE";} |
+    CHAR {yy.quadruple.semantics.currentType = "CHAR";} |
+    STRING {yy.quadruple.semantics.currentType = "STRING";} |
+    BOOLEAN {yy.quadruple.semantics.currentType = "BOOLEAN";};
 
 function:
     FUNCTION type ID @createFunction OPEN_PARENTHESIS params CLOSE_PARENTHESIS vars block @popScope |
