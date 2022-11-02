@@ -199,10 +199,33 @@
     yy.quadruple.operators.pop();
 };
 
+@processIf: {
+    yy.quadruple.processIf(yy.mylineno);
+};
+
+@processElse: {
+    yy.quadruple.processElse();
+};
+
+@returnIf: {
+    yy.quadruple.returnIf();
+};
+
+@storeWhile: {
+    yy.quadruple.storeWhile();
+};
+
+@returnWhile: {
+    yy.quadruple.returnWhile();
+};
+
 baky:
     BAKY ID @createProgram SEMICOLON vars funcs main {
         // yy.quadruple.semantics.functionsTable = {};
-        console.log(JSON.stringify(yy.quadruple.quadruples, null, 4));
+        // console.log(JSON.stringify(yy.quadruple.quadruples, null, 4));
+        for(let i = 0; i < yy.quadruple.quadruples.length; i++) {
+            console.log(i + " : " + JSON.stringify(yy.quadruple.quadruples[i], null, 4))
+        }
         console.log(`Successful compilation of program ${yy.quadruple.semantics.globalName}`);
     };
 
@@ -297,11 +320,11 @@ assign:
     var EQUAL @pushOperator exp SEMICOLON @processAssign;
 
 if:
-    IF OPEN_PARENTHESIS exp CLOSE_PARENTHESIS block |
-    IF OPEN_PARENTHESIS exp CLOSE_PARENTHESIS block ELSE block;
+    IF OPEN_PARENTHESIS exp CLOSE_PARENTHESIS @processIf block @returnIf |
+    IF OPEN_PARENTHESIS exp CLOSE_PARENTHESIS @processIf block ELSE @processElse block @returnIf;
 
 while:
-    WHILE OPEN_PARENTHESIS exp CLOSE_PARENTHESIS block;
+    WHILE @storeWhile OPEN_PARENTHESIS exp CLOSE_PARENTHESIS @processIf block @returnWhile;
 
 for:
     FROM ID @validateForVariable TO exp DO block;

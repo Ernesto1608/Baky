@@ -11,4 +11,14 @@ var int j, i;
     j = i+2;
     read(i);
     write("hola",'a',"adios", i+j/8>5);
+    if(1<2) {
+        read(j);
+    } else {
+        read(i);
+    }
+    write("sup");
+    while(1<2) {
+        read(i);
+    }
+    write("done while");
 }

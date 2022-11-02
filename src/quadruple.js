@@ -1,4 +1,5 @@
 const {Stack, Queue} = require('datastructures-js');
+const { TYPE } = require('./semantic-constants.js');
 const Semantics = require('./semantics.js');
 
 class Quadruple {
@@ -9,6 +10,7 @@ class Quadruple {
         this.types = new Stack();
         this.operators = new Stack();
         this.currentTemporal = 1;
+        this.jumps = new Stack();
     }
 
     processOperator(operator, line) {
@@ -40,6 +42,36 @@ class Quadruple {
         const [rightO] = [this.operands.pop()];
         const [rightT] = [this.types.pop()];
         this.quadruples.push(["read", rightO, null, null]);
+    }
+
+    processIf(line) {
+        const [rightO] = [this.operands.pop()];
+        const [rightT] = [this.types.pop()];
+        if(rightT != TYPE.BOOLEAN) throw new Error(`Conditions must have type boolean on line ${line}`);    
+        this.quadruples.push(["gotoF", rightO, null, null]);
+        this.jumps.push(this.quadruples.length-1);
+    }
+
+    processElse() {
+        this.quadruples.push(["goto", null, null, null]);
+        this.returnIf();
+        this.jumps.push(this.quadruples.length-1);
+    }
+
+    returnIf() {
+        const jump = this.jumps.pop();
+        this.quadruples[jump][3] = this.quadruples.length;
+    }
+
+    storeWhile() {
+        this.jumps.push(this.quadruples.length);
+    }
+
+    returnWhile() {
+        const jumpDone = this.jumps.pop();
+        const jumpWhile = this.jumps.pop();
+        this.quadruples.push(["goto", null, null, jumpWhile]);
+        this.quadruples[jumpDone][3] = this.quadruples.length;
     }
 }
 
