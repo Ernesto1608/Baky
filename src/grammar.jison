@@ -112,22 +112,97 @@
     yy.quadruple.semantics.createVariableArray($-3, yy.mylineno, "MATRIX", []);
 };
 
-@validateVariable: {
+@validateForVariable: {
     yy.quadruple.semantics.validateVariable($1, yy.mylineno, "");
 };
 
+@validateVariable: {
+    let typeV = yy.quadruple.semantics.validateVariable($1, yy.mylineno, "");
+    yy.quadruple.operands.push($1);
+    yy.quadruple.types.push(typeV);
+};
+
 @validateArray: {
-    yy.quadruple.semantics.validateVariable($-2, yy.mylineno, "ARRAY");
+    let typeA = yy.quadruple.semantics.validateVariable($-2, yy.mylineno, "ARRAY");
+    yy.quadruple.operands.push($-2);
+    yy.quadruple.types.push(typeA);
 };
 
 @validateMatrix: {
-    yy.quadruple.semantics.validateVariable($-5, yy.mylineno, "MATRIX");
+    let typeM = yy.quadruple.semantics.validateVariable($-5, yy.mylineno, "MATRIX");
+    yy.quadruple.operands.push($-5);
+    yy.quadruple.types.push(typeM);
+};
+
+@pushOperator: {
+    yy.quadruple.operators.push($1);
+};
+
+@processOperatorN1: {
+    let operatorN1 = yy.quadruple.operators.peek();
+    while(operatorN1 == '*' || operatorN1 == '/') {
+        yy.quadruple.processOperator(operatorN1, yy.mylineno);
+        operatorN1 = yy.quadruple.operators.peek();
+    }
+};
+
+@processOperatorN2: {
+    let operatorN2 = yy.quadruple.operators.peek();
+    while(operatorN2 == '+' || operatorN2 == '-') {
+        yy.quadruple.processOperator(operatorN2, yy.mylineno);
+        operatorN2 = yy.quadruple.operators.peek();
+    }
+};
+
+@processOperatorN3: {
+    let operatorN3 = yy.quadruple.operators.peek();
+    while(operatorN3 == '==' || operatorN3 == '!=' || operatorN3 == '<' || operatorN3 == '<=' || operatorN3 == '>' || operatorN3 == '>=') {
+        yy.quadruple.processOperator(operatorN3, yy.mylineno);
+        operatorN3 = yy.quadruple.operators.peek();
+    }
+};
+
+@processOperatorN4: {
+    let operatorN4 = yy.quadruple.operators.peek();
+    while(operatorN4 == '&&') {
+        yy.quadruple.processOperator(operatorN4, yy.mylineno);
+        operatorN4 = yy.quadruple.operators.peek();
+    }
+};
+
+@processOperatorN5: {
+    let operatorN5 = yy.quadruple.operators.peek();
+    while(operatorN5 == '||') {
+        yy.quadruple.processOperator(operatorN5, yy.mylineno);
+        operatorN5 = yy.quadruple.operators.peek();
+    }
+};
+
+@processAssign: {
+    let operatorAssign = yy.quadruple.operators.peek();
+    yy.quadruple.processAssign(operatorAssign, yy.mylineno);
+};
+
+@processWrite: {
+    yy.quadruple.processWrite();
+};
+
+@processRead: {
+    yy.quadruple.processRead();
+};
+
+@pushBottom: {
+    yy.quadruple.operators.push($1);
+};
+
+@popBottom: {
+    yy.quadruple.operators.pop();
 };
 
 baky:
     BAKY ID @createProgram SEMICOLON vars funcs main {
         // yy.quadruple.semantics.functionsTable = {};
-        console.log(JSON.stringify(yy.quadruple.semantics.functionsTable, null, 4));
+        console.log(JSON.stringify(yy.quadruple.quadruples, null, 4));
         console.log(`Successful compilation of program ${yy.quadruple.semantics.globalName}`);
     };
 
@@ -208,20 +283,18 @@ read:
     READ OPEN_PARENTHESIS read_aux CLOSE_PARENTHESIS SEMICOLON;
 
 read_aux:
-    var |
-    var COMA read_aux;
+    var @processRead |
+    var @processRead COMA read_aux;
 
 write:
     WRITE OPEN_PARENTHESIS write_aux CLOSE_PARENTHESIS SEMICOLON;
 
 write_aux:
-    STRING_VALUE |
-    STRING_VALUE COMA write_aux |
-    exp |
-    exp COMA write_aux;
+    exp @processWrite |
+    exp @processWrite COMA write_aux;
 
 assign:
-    var EQUAL exp SEMICOLON;
+    var EQUAL @pushOperator exp SEMICOLON @processAssign;
 
 if:
     IF OPEN_PARENTHESIS exp CLOSE_PARENTHESIS block |
@@ -231,11 +304,11 @@ while:
     WHILE OPEN_PARENTHESIS exp CLOSE_PARENTHESIS block;
 
 for:
-    FROM ID @validateVariable TO exp DO block;
+    FROM ID @validateForVariable TO exp DO block;
 
 exp:
-    superexp |
-    superexp OR exp;
+    superexp @processOperatorN5 |
+    superexp @processOperatorN5 OR @pushOperator exp;
 
 var:
     ID @validateVariable |
@@ -244,37 +317,37 @@ var:
         OPEN_SQUARE_BRACKET exp CLOSE_SQUARE_BRACKET @validateMatrix;
 
 superexp:
-    megaexp |
-    megaexp AND superexp;
+    megaexp @processOperatorN4 |
+    megaexp @processOperatorN4 AND @pushOperator superexp;
 
 megaexp:
-    hiperexp |
-    hiperexp comp hiperexp;
+    hiperexp @processOperatorN3 |
+    hiperexp comp hiperexp @processOperatorN3;
 
 hiperexp:
-    term |
-    hiperexp PLUS term |
-    hiperexp MINUS term;
+    term @processOperatorN2 |
+    term @processOperatorN2 PLUS @pushOperator hiperexp |
+    term @processOperatorN2 MINUS @pushOperator hiperexp;
 
 comp:
-    LESS_THAN |
-    GREATER_THAN |
-    EQ |
-    NOT_EQUAL |
-    GREATER_OR_EQ_THAN |
-    LESS_OR_EQ_THAN;
+    LESS_THAN @pushOperator |
+    GREATER_THAN @pushOperator |
+    EQ @pushOperator |
+    NOT_EQUAL @pushOperator |
+    GREATER_OR_EQ_THAN @pushOperator |
+    LESS_OR_EQ_THAN @pushOperator;
 
 term:
-    factor |
-    term TIMES factor |
-    term DIVIDED factor;
+    factor @processOperatorN1 |
+    factor @processOperatorN1 TIMES @pushOperator term |
+    factor @processOperatorN1 DIVIDED @pushOperator term;
 
 factor:
-    OPEN_PARENTHESIS exp CLOSE_PARENTHESIS |
+    OPEN_PARENTHESIS @pushBottom exp CLOSE_PARENTHESIS @popBottom |
     var |
     call |
-    INT_VALUE |
-    DOUBLE_VALUE |
-    CHAR_VALUE |
-    STRING_VALUE |
-    BOOLEAN_VALUE;
+    INT_VALUE {yy.quadruple.operands.push($1); yy.quadruple.types.push("INT");} |
+    DOUBLE_VALUE {yy.quadruple.operands.push($1); yy.quadruple.types.push("DOUBLE");} |
+    CHAR_VALUE {yy.quadruple.operands.push($1); yy.quadruple.types.push("CHAR");} |
+    STRING_VALUE {yy.quadruple.operands.push($1); yy.quadruple.types.push("STRING");} |
+    BOOLEAN_VALUE {yy.quadruple.operands.push($1); yy.quadruple.types.push("BOOLEAN");} ;

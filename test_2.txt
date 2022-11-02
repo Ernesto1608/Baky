@@ -7,5 +7,8 @@ var double p[10];
 void Baky()
 var int j, i;
 {
-    if(j+2.5*2-6/8*(j/i)){}
+    if(j+2.5*2-6/8*(j/i) > 34+56 && (34<5 || false)){}
+    j = i+2;
+    read(i);
+    write("hola",'a',"adios", i+j/8>5);
 }

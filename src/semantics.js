@@ -7,6 +7,7 @@ class Semantics {
         this.scopeStack = new Stack([undefined]);
         this.currentType = "VOID";
         this.functionsTable = {};
+        this.semantiConstants = semantiConstants;
     }
 
     createFunction(id, line){
@@ -28,7 +29,6 @@ class Semantics {
         }
         this.functionsTable[currentScope].variablesTable[id] = {
             type: this.currentType,
-            value: semantiConstants.INITVALUES[this.currentType]
         }
     }
 
@@ -41,7 +41,6 @@ class Semantics {
             type: this.currentType,
             supertype: supertype,
             dimensions: dimensions,
-            value: semantiConstants.INITVALUES[this.currentType]
         }
     }
 
@@ -54,10 +53,12 @@ class Semantics {
     validateVariable(id, line, supertype){
         let currentScope = this.scopeStack.peek();
         let foundScope = undefined;
+        let type;
 
         while(currentScope != undefined && foundScope == undefined) {
             if(this.functionsTable[currentScope].variablesTable[id]){
                 foundScope = currentScope;
+                type = this.functionsTable[currentScope].variablesTable[id].type;
             }
             currentScope = this.functionsTable[currentScope].prevScope;
         }
@@ -66,6 +67,7 @@ class Semantics {
         if(supertype == "" && this.functionsTable[foundScope].variablesTable[id].supertype) throw new Error(`Missing indexes, variable ${id} on line ${line}`);
         if(supertype == "ARRAY" && this.functionsTable[foundScope].variablesTable[id].supertype != "ARRAY") throw new Error(`Not an array, variable ${id} on line ${line}`);
         if(supertype == "MATRIX" && this.functionsTable[foundScope].variablesTable[id].supertype != "MATRIX") throw new Error(`Not a matrix, variable ${id} on line ${line}`);
+        return type;
     }
 }
 
