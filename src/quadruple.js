@@ -73,6 +73,25 @@ class Quadruple {
         this.quadruples.push(["goto", null, null, jumpWhile]);
         this.quadruples[jumpDone][3] = this.quadruples.length;
     }
+
+    processFor() {
+        const forEnd = this.operands.pop();
+        const forStart = this.operands.pop();
+        this.quadruples.push(["=", 't'+this.currentTemporal, forStart, null]);
+        this.jumps.push(this.quadruples.length);
+        this.quadruples.push(["<", 't'+this.currentTemporal, forEnd, 't'+(this.currentTemporal+1)]);
+        this.jumps.push(this.quadruples.length);
+        this.quadruples.push(["gotoF", 't'+(this.currentTemporal+1), null, null]);
+        this.quadruples.push(["+", 't'+this.currentTemporal, 1, 't'+this.currentTemporal]);
+        this.currentTemporal+=2;
+    }
+
+    endFor() {
+        const jumpForDone = this.jumps.pop();
+        const jumpFor = this.jumps.pop();
+        this.quadruples.push(["goto", null, null, jumpFor]);
+        this.quadruples[jumpForDone][3] = this.quadruples.length;
+    }
 }
 
 module.exports = Quadruple;

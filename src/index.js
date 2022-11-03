@@ -9,4 +9,4 @@ const quadruple = new Quadruple();
 parser.yy.data = {
     quadruple
 };
-parser.parse(readFileSync('./test_2.txt', "utf-8"));
+parser.parse(readFileSync('./test_3.txt', "utf-8"));

@@ -1,0 +1,10 @@
+Baky programa;
+
+void Baky()
+var int j, i;
+{
+    from i to (6-1) do {
+        write("for");
+    }
+    write("done for");
+}

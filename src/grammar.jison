@@ -113,7 +113,17 @@
 };
 
 @validateForVariable: {
-    yy.quadruple.semantics.validateVariable($1, yy.mylineno, "");
+    let typeF = yy.quadruple.semantics.validateVariable($1, yy.mylineno, "");
+    if (typeF != "INT" && typeF != "DOUBLE") throw new Error(`For must have int or double on line ${yy.mylineno}`);
+    yy.quadruple.operands.push($1);
+};
+
+@processFor: {
+    yy.quadruple.processFor();
+};
+
+@endFor: {
+    yy.quadruple.endFor();
 };
 
 @validateVariable: {
@@ -327,7 +337,7 @@ while:
     WHILE @storeWhile OPEN_PARENTHESIS exp CLOSE_PARENTHESIS @processIf block @returnWhile;
 
 for:
-    FROM ID @validateForVariable TO exp DO block;
+    FROM ID @validateForVariable TO exp @processFor DO block @endFor;
 
 exp:
     superexp @processOperatorN5 |
