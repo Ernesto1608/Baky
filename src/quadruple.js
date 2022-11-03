@@ -1,5 +1,4 @@
 const {Stack, Queue} = require('datastructures-js');
-const { TYPE } = require('./semantic-constants.js');
 const Semantics = require('./semantics.js');
 
 class Quadruple {
@@ -47,7 +46,7 @@ class Quadruple {
     processIf(line) {
         const [rightO] = [this.operands.pop()];
         const [rightT] = [this.types.pop()];
-        if(rightT != TYPE.BOOLEAN) throw new Error(`Conditions must have type boolean on line ${line}`);    
+        if(rightT != this.semantics.semantiConstants.TYPE.BOOLEAN) throw new Error(`Conditions must have type boolean on line ${line}`);    
         this.quadruples.push(["gotoF", rightO, null, null]);
         this.jumps.push(this.quadruples.length-1);
     }
@@ -74,16 +73,18 @@ class Quadruple {
         this.quadruples[jumpDone][3] = this.quadruples.length;
     }
 
-    processFor() {
+    processFor(line) {
         const forEnd = this.operands.pop();
+        const forEndT = this.types.pop();
         const forStart = this.operands.pop();
-        this.quadruples.push(["=", 't'+this.currentTemporal, forStart, null]);
+        const forStartT = this.types.pop();
+        if (forStartT != "INT" && forStartT != "DOUBLE" || forEndT != "INT" && forEndT != "DOUBLE") throw new Error(`For must have int or double on line ${line}`);
         this.jumps.push(this.quadruples.length);
-        this.quadruples.push(["<", 't'+this.currentTemporal, forEnd, 't'+(this.currentTemporal+1)]);
+        this.quadruples.push(["<", forStart, forEnd, 't'+(this.currentTemporal)]);
         this.jumps.push(this.quadruples.length);
-        this.quadruples.push(["gotoF", 't'+(this.currentTemporal+1), null, null]);
-        this.quadruples.push(["+", 't'+this.currentTemporal, 1, 't'+this.currentTemporal]);
-        this.currentTemporal+=2;
+        this.quadruples.push(["gotoF", 't'+(this.currentTemporal), null, null]);
+        this.quadruples.push(["+", forStart, 1, forStart]);
+        this.currentTemporal++;
     }
 
     endFor() {

@@ -1,10 +1,19 @@
 Baky programa;
 
+function int uno()
+var int i;
+{
+    i = 3;
+    return i;
+}
+
 void Baky()
 var int j, i;
 {
     from i to (6-1) do {
         write("for");
     }
+
+    while(8){}
     write("done for");
 }

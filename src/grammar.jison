@@ -112,14 +112,8 @@
     yy.quadruple.semantics.createVariableArray($-3, yy.mylineno, "MATRIX", []);
 };
 
-@validateForVariable: {
-    let typeF = yy.quadruple.semantics.validateVariable($1, yy.mylineno, "");
-    if (typeF != "INT" && typeF != "DOUBLE") throw new Error(`For must have int or double on line ${yy.mylineno}`);
-    yy.quadruple.operands.push($1);
-};
-
 @processFor: {
-    yy.quadruple.processFor();
+    yy.quadruple.processFor(yy.mylineno);
 };
 
 @endFor: {
@@ -337,7 +331,7 @@ while:
     WHILE @storeWhile OPEN_PARENTHESIS exp CLOSE_PARENTHESIS @processIf block @returnWhile;
 
 for:
-    FROM ID @validateForVariable TO exp @processFor DO block @endFor;
+    FROM var TO exp @processFor DO block @endFor;
 
 exp:
     superexp @processOperatorN5 |
