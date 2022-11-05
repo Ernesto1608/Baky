@@ -15,6 +15,7 @@ El avance actual cuenta con los siguientes desarrollos:
 Ejemplo:
 
 ![image](https://user-images.githubusercontent.com/43384941/200096480-0566fde4-c58c-4c88-8777-babff861d140.png)
+![image](https://user-images.githubusercontent.com/43384941/200096713-c321a135-3e55-407d-b096-dba8f6a1b11e.png)
 
 
 
