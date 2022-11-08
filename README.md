@@ -11,11 +11,9 @@ El avance actual cuenta con los siguientes desarrollos:
 - Quádruplos de estatutos secuenciales.
 - Quádruplos de estatutos condicionales.
 - Quádruplos de estatutos cíclicos.
+- Quádruplos de funciones (avance)
 
 Ejemplo:
 
-![image](https://user-images.githubusercontent.com/43384941/200096480-0566fde4-c58c-4c88-8777-babff861d140.png)
-![image](https://user-images.githubusercontent.com/43384941/200096713-c321a135-3e55-407d-b096-dba8f6a1b11e.png)
-
-
-
+![image](https://user-images.githubusercontent.com/43384941/200478991-b3b79377-b834-4a63-b7fd-d0b3a750532b.png)
+![image](https://user-images.githubusercontent.com/43384941/200479085-01b9987f-a0d8-4f47-9aba-9a8e4395cd1d.png)
