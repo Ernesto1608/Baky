@@ -93,6 +93,46 @@ class Quadruple {
         this.quadruples.push(["goto", null, null, jumpFor]);
         this.quadruples[jumpForDone][3] = this.quadruples.length;
     }
+
+    createFunctionJump() {
+        const funcStart = this.semantics.functionsTable[this.semantics.currentFunctionCall].start;
+        this.quadruples.push(["goto", null, null, funcStart]);
+        this.quadruples.push(["=", 't'+this.currentTemporal, `_${this.semantics.currentFunctionCall}`, null]);
+        this.currentTemporal++;
+    }
+
+    createReturnFromFunction(id) {
+        const jump = this.quadruples.length + this.semantics.functionsTable[id].paramsTable.length + 2;
+        this.quadruples.push(["=", `_${id}Return`, jump, null]);
+        //change scope
+    }
+
+    createParam(line) {
+        const operand = this.operands.pop();
+        const type = this.types.pop();
+        const param = this.semantics.functionsTable[this.semantics.currentFunctionCall].paramsTable[this.semantics.paramsCounter];
+        if(param.type != type) {
+            throw new Error(`Wrong parameter type on line ${line}`);
+        }
+        this.quadruples.push(["=", param.id, operand, null]);
+        this.semantics.paramsCounter++;
+    }
+
+    returnFromFunction(scope) {
+        this.quadruples.push(["goto", null, null, `_${scope}Return`]);
+    }
+
+    handleReturn(line) {
+        const operand = this.operands.pop();
+        const type = this.types.pop();
+        const scope = this.semantics.scopeStack.peek();
+        if(this.semantics.functionsTable[scope].type != type) {
+            throw new Error(`Wrong return type on line ${line}`);
+        }
+        this.quadruples.push(["=", `_${scope}`, operand, null]);
+        this.returnFromFunction(scope);
+    }
+
 }
 
 module.exports = Quadruple;

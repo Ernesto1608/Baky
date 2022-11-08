@@ -8,16 +8,29 @@ class Semantics {
         this.currentType = "VOID";
         this.functionsTable = {};
         this.semantiConstants = semantiConstants;
+        this.currentFunctionCall = "";
+        this.paramsCounter = 0;
+        this.expectedParams = 0;
     }
 
-    createFunction(id, line){
+    createFunction(id, line, start){
         if(this.functionsTable[id]){
             throw new Error(`Duplicated function name ${id} on line ${line}`);
         }
         this.functionsTable[id] = {
             type: this.currentType,
             prevScope: this.scopeStack.peek(),
-            variablesTable: {}
+            variablesTable: {},
+            paramsTable: [],
+            start: start
+        }
+        if(this.currentType != "VOID") {
+            this.functionsTable[this.globalName].variablesTable[`_${id}`] = {
+                type: this.currentType,
+            }
+        }
+        this.functionsTable[this.globalName].variablesTable[`_${id}Return`] = {
+            type: this.currentType,
         }
         this.scopeStack.push(id);
     }
@@ -48,6 +61,15 @@ class Semantics {
         if(!this.functionsTable[id] || id == this.globalName){
             throw new Error(`Undeclared function ${id} on line ${line}`);
         }
+        this.currentFunctionCall = id;
+        this.paramsCounter = 0;
+        this.expectedParams = this.functionsTable[id].paramsTable.length;
+    }
+
+    validateParams(line){
+        if(this.paramsCounter != this.expectedParams) {
+            throw new Error(`Number of parameters doesn't match function definition for ${this.currentFunctionCall} in line ${line}`);
+        }
     }
 
     validateVariable(id, line, supertype){
@@ -68,6 +90,20 @@ class Semantics {
         if(supertype == "ARRAY" && this.functionsTable[foundScope].variablesTable[id].supertype != "ARRAY") throw new Error(`Not an array, variable ${id} on line ${line}`);
         if(supertype == "MATRIX" && this.functionsTable[foundScope].variablesTable[id].supertype != "MATRIX") throw new Error(`Not a matrix, variable ${id} on line ${line}`);
         return type;
+    }
+
+    createParameter(id, line){
+        const currentScope = this.scopeStack.peek();
+        if(this.functionsTable[currentScope].variablesTable[id]){
+            throw new Error(`Duplicated variable name ${id} on line ${line} on scope ${currentScope}`);
+        }
+        this.functionsTable[currentScope].variablesTable[id] = {
+            type: this.currentType,
+        }
+        this.functionsTable[currentScope].paramsTable.push({
+            type: this.currentType,
+            id: id,
+        });
     }
 }
 

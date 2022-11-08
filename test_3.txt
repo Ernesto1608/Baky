@@ -2,10 +2,11 @@ Baky programa;
 
 var int i,j;
 
-function int uno()
+function int func(int x, int o)
 var int i;
 {
     i = 3;
+    write(5+2);
     return i;
 }
 
@@ -32,4 +33,5 @@ var boolean pasa;
 
     while(j>8){}
     write("done for");
+    func(1, 21);
 }

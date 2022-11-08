@@ -75,25 +75,43 @@
 //Neuralgic points definition 
 @createProgram: {
     yy.quadruple.semantics.globalName = $1;
-    yy.quadruple.semantics.createFunction($1, yy.mylineno);
+    yy.quadruple.semantics.createFunction($1, yy.mylineno, 0);
 };
 
 @createFunction: {
     if($0 == "void") yy.quadruple.semantics.currentType = "VOID";
-    yy.quadruple.semantics.createFunction($1, yy.mylineno);
+    const quadLength = yy.quadruple.quadruples.length;
+    yy.quadruple.semantics.createFunction($1, yy.mylineno, quadLength);
 };
 
 @validateFunction: {
     yy.quadruple.semantics.validateFunction($0, yy.mylineno);
+    yy.quadruple.createReturnFromFunction($0);
+};
+
+@validateParams: {
+    yy.quadruple.semantics.validateParams(yy.mylineno);
+    yy.quadruple.createFunctionJump();
+};
+
+@createParam: {
+    yy.quadruple.createParam(yy.mylineno);
 };
 
 @popScope: {
     let currentScope = yy.quadruple.semantics.scopeStack.pop();
     // yy.quadruple.semantics.functionsTable[currentScope].variablesTable = {};
+    if(currentScope != "Baky") {
+        yy.quadruple.returnFromFunction(currentScope);
+    }
 };
 
 @createVariable: {
     yy.quadruple.semantics.createVariable($1, yy.mylineno);
+};
+
+@createParameter: {
+    yy.quadruple.semantics.createParameter($1, yy.mylineno);
 };
 
 @createVariableArray: {
@@ -223,6 +241,10 @@
     yy.quadruple.returnWhile();
 };
 
+@handleReturn: {
+    yy.quadruple.handleReturn(yy.mylineno);
+};
+
 baky:
     BAKY ID @createProgram SEMICOLON vars funcs main {
         // yy.quadruple.semantics.functionsTable = {};
@@ -230,6 +252,7 @@ baky:
         for(let i = 0; i < yy.quadruple.quadruples.length; i++) {
             console.log(i + " : " + JSON.stringify(yy.quadruple.quadruples[i], null, 4))
         }
+        console.log(JSON.stringify(yy.quadruple.semantics.functionsTable, null, 4))
         console.log(`Successful compilation of program ${yy.quadruple.semantics.globalName}`);
     };
 
@@ -275,9 +298,10 @@ block_aux: |
 params: |
     params_aux;
 
+//Falta cambiar los params de matriz y arreglos
 params_aux:
-    type ID @createVariable |
-    type ID @createVariable COMA params_aux |
+    type ID @createParameter |
+    type ID @createParameter COMA params_aux |
     type ID OPEN_SQUARE_BRACKET CLOSE_SQUARE_BRACKET @createVariableArrayParam |
     type ID OPEN_SQUARE_BRACKET CLOSE_SQUARE_BRACKET @createVariableArrayParam COMA params_aux |
     type ID OPEN_SQUARE_BRACKET CLOSE_SQUARE_BRACKET
@@ -296,15 +320,15 @@ statute:
     for;
 
 call:
-    ID OPEN_PARENTHESIS @validateFunction CLOSE_PARENTHESIS SEMICOLON |
-    ID OPEN_PARENTHESIS @validateFunction call_aux CLOSE_PARENTHESIS SEMICOLON;
+    ID OPEN_PARENTHESIS @validateFunction CLOSE_PARENTHESIS @validateParams SEMICOLON |
+    ID OPEN_PARENTHESIS @validateFunction call_aux CLOSE_PARENTHESIS @validateParams SEMICOLON;
 
 call_aux:
-    exp |
-    exp COMA call_aux;
+    exp @createParam |
+    exp @createParam COMA call_aux;
 
 return:
-    RETURN exp SEMICOLON;
+    RETURN exp @handleReturn SEMICOLON;
 
 read:
     READ OPEN_PARENTHESIS read_aux CLOSE_PARENTHESIS SEMICOLON;
