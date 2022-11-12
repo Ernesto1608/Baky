@@ -25,6 +25,9 @@ class Quadruple {
 
     processConstant(value, type) {
         const address = this.semantics.memory.assignMemory("cons", type, false)
+        const scopeMem = this.semantics.memory.getScopeFromAddress(address);
+        const typeMem = this.semantics.memory.getTypeFromAddress(address);
+        this.semantics.memory.virtualMemory[scopeMem][typeMem].push(value);
         this.operands.push(address);
         this.types.push(type);
     }

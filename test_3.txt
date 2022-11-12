@@ -1,6 +1,9 @@
 Baky programa;
 
 var int i,j;
+var double r;
+var string s;
+var boolean b;
 
 function int func(int x, int o)
 var int i;

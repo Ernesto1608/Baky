@@ -19,12 +19,15 @@ class Semantics {
         if(this.functionsTable[id]){
             throw new Error(`Duplicated function name ${id} on line ${line}`);
         }
+        let resourcesSize = 10;
+        if(id == this.globalName) resourcesSize = 5;
         this.functionsTable[id] = {
             type: this.currentType,
             prevScope: this.scopeStack.peek(),
             variablesTable: {},
             paramsTable: [],
-            start: start
+            start: start,
+            resources: new Array(resourcesSize).fill(0)
         }
         if(this.currentType != "VOID") {
             this.functionsTable[this.globalName].variablesTable[`_${id}`] = {
@@ -45,9 +48,12 @@ class Semantics {
         }
         let scopeMem = "local";
         if(currentScope == this.globalName) scopeMem = "global";
+        const address = this.memory.assignMemory(scopeMem, this.currentType, false);
+        const typeMem = this.memory.getTypeFromAddress(address);
+        this.functionsTable[currentScope].resources[typeMem]++;
         this.functionsTable[currentScope].variablesTable[id] = {
             type: this.currentType,
-            address: this.memory.assignMemory(scopeMem, this.currentType, false)
+            address: address
         }
     }
 

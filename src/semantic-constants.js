@@ -22,14 +22,6 @@ const TYPE = Object.freeze({
     BOOLEAN: 'BOOLEAN',
 });
 
-const INITVALUES = Object.freeze({
-    INT: 0,
-    DOUBLE: 0,
-    STRING: "",
-    CHAR: '',
-    BOOLEAN: false,
-});
-
 const CUBE = Object.freeze({
     [TYPE.INT]: {
         [TYPE.INT]: {
@@ -120,5 +112,4 @@ module.exports = {
     OPERATOR,
     TYPE,
     CUBE,
-    INITVALUES
 };

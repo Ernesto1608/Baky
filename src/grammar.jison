@@ -78,6 +78,11 @@
     yy.quadruple.semantics.createFunction($1, yy.mylineno, 0);
 };
 
+@fillGlobalMemory: {
+    const resources = yy.quadruple.semantics.functionsTable[$-2].resources;
+    yy.quadruple.semantics.memory.fillGlobalMemory(resources);
+};
+
 @createFunction: {
     if($0 == "void") yy.quadruple.semantics.currentType = "VOID";
     const quadLength = yy.quadruple.quadruples.length;
@@ -246,13 +251,14 @@
 };
 
 baky:
-    BAKY ID @createProgram SEMICOLON vars funcs main {
+    BAKY ID @createProgram SEMICOLON vars @fillGlobalMemory funcs main {
         // yy.quadruple.semantics.functionsTable = {};
         // console.log(JSON.stringify(yy.quadruple.quadruples, null, 4));
         for(let i = 0; i < yy.quadruple.quadruples.length; i++) {
             console.log(i + " : " + yy.quadruple.quadruples[i]);
         }
-        console.log(JSON.stringify(yy.quadruple.semantics.functionsTable, null, 4))
+        console.log(JSON.stringify(yy.quadruple.semantics.functionsTable, null, 4));
+        console.log(yy.quadruple.semantics.memory.virtualMemory);
         console.log(`Successful compilation of program ${yy.quadruple.semantics.globalName}`);
     };
 
