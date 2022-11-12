@@ -1,5 +1,6 @@
 const {Stack} = require('datastructures-js');
 const semantiConstants = require('./semantic-constants.js');
+const Memory = require('./memory.js');
 
 class Semantics {
     constructor() {
@@ -8,6 +9,7 @@ class Semantics {
         this.currentType = "VOID";
         this.functionsTable = {};
         this.semantiConstants = semantiConstants;
+        this.memory = new Memory();
         this.currentFunctionCall = "";
         this.paramsCounter = 0;
         this.expectedParams = 0;
@@ -33,6 +35,7 @@ class Semantics {
             type: this.currentType,
         }
         this.scopeStack.push(id);
+        this.memory.resetLocalMemory();
     }
 
     createVariable(id, line){
@@ -40,8 +43,11 @@ class Semantics {
         if(this.functionsTable[currentScope].variablesTable[id]){
             throw new Error(`Duplicated variable name ${id} on line ${line} on scope ${currentScope}`);
         }
+        let scopeMem = "local";
+        if(currentScope == this.globalName) scopeMem = "global";
         this.functionsTable[currentScope].variablesTable[id] = {
             type: this.currentType,
+            address: this.memory.assignMemory(scopeMem, this.currentType, false)
         }
     }
 
@@ -75,12 +81,12 @@ class Semantics {
     validateVariable(id, line, supertype){
         let currentScope = this.scopeStack.peek();
         let foundScope = undefined;
-        let type;
+        let variable;
 
         while(currentScope != undefined && foundScope == undefined) {
             if(this.functionsTable[currentScope].variablesTable[id]){
                 foundScope = currentScope;
-                type = this.functionsTable[currentScope].variablesTable[id].type;
+                variable = this.functionsTable[currentScope].variablesTable[id];
             }
             currentScope = this.functionsTable[currentScope].prevScope;
         }
@@ -89,7 +95,7 @@ class Semantics {
         if(supertype == "" && this.functionsTable[foundScope].variablesTable[id].supertype) throw new Error(`Missing indexes, variable ${id} on line ${line}`);
         if(supertype == "ARRAY" && this.functionsTable[foundScope].variablesTable[id].supertype != "ARRAY") throw new Error(`Not an array, variable ${id} on line ${line}`);
         if(supertype == "MATRIX" && this.functionsTable[foundScope].variablesTable[id].supertype != "MATRIX") throw new Error(`Not a matrix, variable ${id} on line ${line}`);
-        return type;
+        return variable;
     }
 
     createParameter(id, line){
@@ -97,8 +103,11 @@ class Semantics {
         if(this.functionsTable[currentScope].variablesTable[id]){
             throw new Error(`Duplicated variable name ${id} on line ${line} on scope ${currentScope}`);
         }
+        let scopeMem = "local";
+        if(currentScope == this.globalName) scopeMem = "global";
         this.functionsTable[currentScope].variablesTable[id] = {
             type: this.currentType,
+            address: this.memory.assignMemory(scopeMem, this.currentType, false)
         }
         this.functionsTable[currentScope].paramsTable.push({
             type: this.currentType,

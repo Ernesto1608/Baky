@@ -16,11 +16,17 @@ class Quadruple {
         const [rightO, leftO] = [this.operands.pop(), this.operands.pop()];
         const [rightT, leftT] = [this.types.pop(), this.types.pop()];
         const type = this.semantics.semantiConstants.CUBE.validOperation(rightT, leftT, operator, line);
-        this.quadruples.push([operator, leftO, rightO, 't'+ this.currentTemporal]);
-        this.operands.push('t'+this.currentTemporal);
+        const address = this.semantics.memory.assignMemory("local", type, true);
+        this.quadruples.push([operator, leftO, rightO, address]);
+        this.operands.push(address);
         this.types.push(type);
-        this.currentTemporal++;
         this.operators.pop();
+    }
+
+    processConstant(value, type) {
+        const address = this.semantics.memory.assignMemory("cons", type, false)
+        this.operands.push(address);
+        this.types.push(type);
     }
 
     processAssign(operator, line) {
@@ -80,11 +86,12 @@ class Quadruple {
         const forStartT = this.types.pop();
         if (forStartT != "INT" && forStartT != "DOUBLE" || forEndT != "INT" && forEndT != "DOUBLE") throw new Error(`For must have int or double on line ${line}`);
         this.jumps.push(this.quadruples.length);
-        this.quadruples.push(["<", forStart, forEnd, 't'+(this.currentTemporal)]);
+        const type = this.semantics.semantiConstants.CUBE.validOperation(forStartT, forEndT, '<', line);
+        const address = this.semantics.memory.assignMemory("local", type, true);
+        this.quadruples.push(["<", forStart, forEnd, address]);
         this.jumps.push(this.quadruples.length);
-        this.quadruples.push(["gotoF", 't'+(this.currentTemporal), null, null]);
+        this.quadruples.push(["gotoF", address, null, null]);
         this.quadruples.push(["+", forStart, 1, forStart]);
-        this.currentTemporal++;
     }
 
     endFor() {

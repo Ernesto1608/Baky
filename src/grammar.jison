@@ -140,8 +140,8 @@
 
 @validateVariable: {
     let typeV = yy.quadruple.semantics.validateVariable($1, yy.mylineno, "");
-    yy.quadruple.operands.push($1);
-    yy.quadruple.types.push(typeV);
+    yy.quadruple.operands.push(typeV.address);
+    yy.quadruple.types.push(typeV.type);
 };
 
 @validateArray: {
@@ -397,8 +397,8 @@ factor:
     OPEN_PARENTHESIS @pushBottom exp CLOSE_PARENTHESIS @popBottom |
     var |
     call |
-    INT_VALUE {yy.quadruple.operands.push($1); yy.quadruple.types.push("INT");} |
-    DOUBLE_VALUE {yy.quadruple.operands.push($1); yy.quadruple.types.push("DOUBLE");} |
-    CHAR_VALUE {yy.quadruple.operands.push($1); yy.quadruple.types.push("CHAR");} |
-    STRING_VALUE {yy.quadruple.operands.push($1); yy.quadruple.types.push("STRING");} |
-    BOOLEAN_VALUE {yy.quadruple.operands.push($1); yy.quadruple.types.push("BOOLEAN");} ;
+    INT_VALUE {yy.quadruple.processConstant($1,"INT");} |
+    DOUBLE_VALUE {yy.quadruple.processConstant($1,"DOUBLE");} |
+    CHAR_VALUE {yy.quadruple.processConstant($1,"CHAR");} |
+    STRING_VALUE {yy.quadruple.processConstant($1,"STRING");} |
+    BOOLEAN_VALUE {yy.quadruple.processConstant($1,"BOOLEAN");} ;
