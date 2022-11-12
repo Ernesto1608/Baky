@@ -42,6 +42,7 @@
 "}" { return "CLOSE_CURLY_BRACKET"; }
 "(" { return "OPEN_PARENTHESIS"; }
 ")" { return "CLOSE_PARENTHESIS"; }
+"==" { return "EQ"; }
 "=" { return "EQUAL"; }
 "||" { return "OR"; }
 "&&" { return "AND"; }
@@ -49,7 +50,6 @@
 "-" { return "MINUS"; }
 "*" { return "TIMES"; }
 "/" { return "DIVIDED"; }
-"==" { return "EQ"; }
 "!=" { return "NOT_EQUAL"; }
 "<=" { return "LESS_OR_EQ_THAN"; }
 ">=" { return "GREATER_OR_EQ_THAN"; }
@@ -250,7 +250,7 @@ baky:
         // yy.quadruple.semantics.functionsTable = {};
         // console.log(JSON.stringify(yy.quadruple.quadruples, null, 4));
         for(let i = 0; i < yy.quadruple.quadruples.length; i++) {
-            console.log(i + " : " + JSON.stringify(yy.quadruple.quadruples[i], null, 4))
+            console.log(i + " : " + yy.quadruple.quadruples[i]);
         }
         console.log(JSON.stringify(yy.quadruple.semantics.functionsTable, null, 4))
         console.log(`Successful compilation of program ${yy.quadruple.semantics.globalName}`);
@@ -345,7 +345,7 @@ write_aux:
     exp @processWrite COMA write_aux;
 
 assign:
-    var EQUAL @pushOperator exp SEMICOLON @processAssign;
+    var EQUAL @pushOperator exp @processAssign SEMICOLON;
 
 if:
     IF OPEN_PARENTHESIS exp CLOSE_PARENTHESIS @processIf block @returnIf |

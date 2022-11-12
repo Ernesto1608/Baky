@@ -5,8 +5,8 @@ var int i,j;
 function int func(int x, int o)
 var int i;
 {
-    i = 3;
-    write(5+2);
+    i = 1 * 4;
+    write(5+8);
     return i;
 }
 
@@ -21,7 +21,7 @@ var boolean pasa;
         }
     }
 
-    if(pasa){
+    if(pasa == false){
         read(j);
     }
     if(pasa || 34 > 4 && false) {

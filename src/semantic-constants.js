@@ -1,6 +1,7 @@
 const OPERATOR = Object.freeze({
     OR: '||',
     AND: '&&',
+    EQUAL: '=',
     EQ: '==',
     NOT_EQUAL: '!=',
     GREATER_THAN: '>',
@@ -37,6 +38,7 @@ const CUBE = Object.freeze({
             [OPERATOR.TIMES]: TYPE.INT,
             [OPERATOR.DIVIDED]: TYPE.DOUBLE,
             [OPERATOR.EQ]: TYPE.BOOLEAN,
+            [OPERATOR.EQUAL]: TYPE.INT,
             [OPERATOR.NOT_EQUAL]: TYPE.BOOLEAN,
             [OPERATOR.GREATER_THAN]: TYPE.BOOLEAN,
             [OPERATOR.GREATER_OR_EQ_THAN]: TYPE.BOOLEAN,
@@ -48,6 +50,7 @@ const CUBE = Object.freeze({
             [OPERATOR.MINUS]: TYPE.DOUBLE,
             [OPERATOR.TIMES]: TYPE.DOUBLE,
             [OPERATOR.DIVIDED]: TYPE.DOUBLE,
+            [OPERATOR.EQUAL]: TYPE.INT,
             [OPERATOR.EQ]: TYPE.BOOLEAN,
             [OPERATOR.NOT_EQUAL]: TYPE.BOOLEAN,
             [OPERATOR.GREATER_THAN]: TYPE.BOOLEAN,
@@ -62,6 +65,7 @@ const CUBE = Object.freeze({
             [OPERATOR.MINUS]: TYPE.DOUBLE,
             [OPERATOR.TIMES]: TYPE.DOUBLE,
             [OPERATOR.DIVIDED]: TYPE.DOUBLE,
+            [OPERATOR.EQUAL]: TYPE.DOUBLE,
             [OPERATOR.EQ]: TYPE.BOOLEAN,
             [OPERATOR.NOT_EQUAL]: TYPE.BOOLEAN,
             [OPERATOR.GREATER_THAN]: TYPE.BOOLEAN,
@@ -74,6 +78,7 @@ const CUBE = Object.freeze({
             [OPERATOR.MINUS]: TYPE.DOUBLE,
             [OPERATOR.TIMES]: TYPE.DOUBLE,
             [OPERATOR.DIVIDED]: TYPE.DOUBLE,
+            [OPERATOR.EQUAL]: TYPE.DOUBLE,
             [OPERATOR.EQ]: TYPE.BOOLEAN,
             [OPERATOR.NOT_EQUAL]: TYPE.BOOLEAN,
             [OPERATOR.GREATER_THAN]: TYPE.BOOLEAN,
@@ -84,18 +89,21 @@ const CUBE = Object.freeze({
     },
     [TYPE.STRING]: {
         [TYPE.STRING]: {
+            [OPERATOR.EQUAL]: TYPE.STRING,
             [OPERATOR.EQ]: TYPE.BOOLEAN,
             [OPERATOR.NOT_EQUAL]: TYPE.BOOLEAN,
         },
     },
     [TYPE.CHAR]: {
         [TYPE.CHAR]: {
+            [OPERATOR.EQUAL]: TYPE.CHAR,
             [OPERATOR.EQ]: TYPE.BOOLEAN,
             [OPERATOR.NOT_EQUAL]: TYPE.BOOLEAN,
         },
     },
     [TYPE.BOOLEAN]: {
         [TYPE.BOOLEAN]: {
+            [OPERATOR.EQUAL]: TYPE.BOOLEAN,
             [OPERATOR.EQ]: TYPE.BOOLEAN,
             [OPERATOR.NOT_EQUAL]: TYPE.BOOLEAN,
             [OPERATOR.OR]: TYPE.BOOLEAN,

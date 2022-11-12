@@ -26,7 +26,7 @@ class Quadruple {
     processAssign(operator, line) {
         const [rightO, leftO] = [this.operands.pop(), this.operands.pop()];
         const [rightT, leftT] = [this.types.pop(), this.types.pop()];
-        if(rightT != leftT) throw new Error(`Invalid operation ${leftT} ${operator} ${rightT} on line ${line}`);        ;
+        this.semantics.semantiConstants.CUBE.validOperation(rightT, leftT, operator, line);
         this.quadruples.push([operator, leftO, rightO, null]);
         this.operators.pop();
     }
