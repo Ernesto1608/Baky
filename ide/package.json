@@ -1,0 +1,25 @@
+{
+  "name": "ide",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@react-native-community/hooks": "^2.8.1",
+    "@rivascva/react-native-code-editor": "^1.2.2",
+    "expo": "~47.0.3",
+    "expo-splash-screen": "~0.17.4",
+    "expo-status-bar": "~1.4.2",
+    "react": "18.1.0",
+    "react-native": "0.70.5",
+    "react-native-safe-area-context": "4.4.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.9"
+  },
+  "private": true
+}
