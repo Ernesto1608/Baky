@@ -10,6 +10,7 @@ class Quadruple {
         this.operators = new Stack();
         this.currentTemporal = 1;
         this.jumps = new Stack();
+        this.currentParameters = [];
     }
 
     processOperator(operator, line) {
@@ -123,31 +124,52 @@ class Quadruple {
     }
 
     createFunctionJump() {
+        const paramsTable = this.semantics.functionsTable[this.semantics.currentFunctionCall].paramsTable;
+        let temps = [];
+        for(let i = paramsTable.length-1; i >= 0; i--) {
+            const operand = this.operands.pop();
+            const address = this.semantics.memory.assignMemory("global", paramsTable[i].type, false);
+            temps.unshift(address);
+            this.quadruples.push(["=", address, operand, null]);
+        }
+        this.quadruples.push(["init", this.semantics.currentFunctionCall, null, null]);
+
+        temps.forEach((temp, i) => {
+            this.quadruples.push(["=", paramsTable[i].address, temp, null]);
+        });
+
         const funcStart = this.semantics.functionsTable[this.semantics.currentFunctionCall].start;
+        const type = this.semantics.functionsTable[this.semantics.currentFunctionCall].type;
         this.quadruples.push(["goto", null, null, funcStart]);
-        this.quadruples.push(["=", 't'+this.currentTemporal, `_${this.semantics.currentFunctionCall}`, null]);
-        this.currentTemporal++;
+        const addressTemp = this.semantics.memory.assignMemory("local", type, true);
+        const address =  this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${this.semantics.currentFunctionCall}`].address;
+        this.quadruples.push(["=", addressTemp, address, null]);
+        this.operands.push(addressTemp);
+        this.types.push(type);
     }
 
     createReturnFromFunction(id) {
-        const jump = this.quadruples.length + this.semantics.functionsTable[id].paramsTable.length + 2;
-        this.quadruples.push(["=", `_${id}Return`, jump, null]);
-        //change scope
+        const jump = this.quadruples.length + this.semantics.functionsTable[id].paramsTable.length * 2 + 3;
+        this.processConstant(jump, 'INT');
+        const address =  this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${id}Return`].address;
+        this.quadruples.push(["=", address, this.operands.pop(), null]);
+        this.types.pop();
     }
 
     createParam(line) {
-        const operand = this.operands.pop();
         const type = this.types.pop();
         const param = this.semantics.functionsTable[this.semantics.currentFunctionCall].paramsTable[this.semantics.paramsCounter];
         if(param.type != type) {
             throw new Error(`Wrong parameter type on line ${line}`);
         }
-        this.quadruples.push(["=", param.id, operand, null]);
         this.semantics.paramsCounter++;
     }
 
     returnFromFunction(scope) {
-        this.quadruples.push(["goto", null, null, `_${scope}Return`]);
+        const address =  this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${scope}Return`].address;
+        this.quadruples.push(["popScope", null, null, null]);
+        this.quadruples.push(["goto", "value", null, address]);
+        //TODO: solo se hace el popScope cuando tiene un return
     }
 
     handleReturn(line) {
@@ -157,7 +179,8 @@ class Quadruple {
         if(this.semantics.functionsTable[scope].type != type) {
             throw new Error(`Wrong return type on line ${line}`);
         }
-        this.quadruples.push(["=", `_${scope}`, operand, null]);
+        const address =  this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${scope}`].address;
+        this.quadruples.push(["=", address, operand, null]);
         this.returnFromFunction(scope);
     }
 

@@ -130,14 +130,24 @@ class VM {
                     }
                     break;
                 case 'goto':
+                    if (quads[i][1] == 'value') {
+                        value = memory.getValueFromAddress(quads[i][3]);
+                        i = value-1;
+                        break;
+                    }
                     i = quads[i][3]-1;
                     break;
-                
+                case 'init':
+                    memory.pushMemoryStack(this.quadruple.semantics.functionsTable[quads[i][1]].resources);
+                    break;
+                case 'popScope':
+                    memory.virtualMemory[1].pop();
+                    break;
             }
             //console.log(i + " : " + JSON.stringify(quads[i], null, 4))
         }
 
-        console.log(JSON.stringify(memory.virtualMemory));
+        //console.log(JSON.stringify(memory.virtualMemory));
     }
 }
 

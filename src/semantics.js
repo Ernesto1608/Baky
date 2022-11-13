@@ -31,12 +31,18 @@ class Semantics {
             resources: new Array(resourcesSize).fill(0)
         }
         if(this.currentType != "VOID") {
+            const address = this.memory.assignMemory("global", this.currentType, false);
             this.functionsTable[this.globalName].variablesTable[`_${id}`] = {
                 type: this.currentType,
+                address
             }
         }
-        this.functionsTable[this.globalName].variablesTable[`_${id}Return`] = {
-            type: this.currentType,
+        if(id != "Baky"){
+            const address = this.memory.assignMemory("global", this.currentType, false);
+            this.functionsTable[this.globalName].variablesTable[`_${id}Return`] = {
+                type: this.currentType,
+                address
+            }
         }
         this.scopeStack.push(id);
         this.memory.resetLocalMemory();
@@ -112,13 +118,15 @@ class Semantics {
         }
         let scopeMem = "local";
         if(currentScope == this.globalName) scopeMem = "global";
+        const address = this.memory.assignMemory(scopeMem, this.currentType, false);
         this.functionsTable[currentScope].variablesTable[id] = {
             type: this.currentType,
-            address: this.memory.assignMemory(scopeMem, this.currentType, false)
+            address
         }
         this.functionsTable[currentScope].paramsTable.push({
             type: this.currentType,
             id: id,
+            address
         });
     }
 }

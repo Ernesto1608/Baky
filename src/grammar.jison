@@ -353,7 +353,8 @@ write_aux:
     exp @processWrite COMA write_aux;
 
 assign:
-    var EQUAL @pushOperator exp @processAssign SEMICOLON;
+    var EQUAL @pushOperator exp @processAssign SEMICOLON |
+    var EQUAL @pushOperator call @processAssign;
 
 if:
     IF OPEN_PARENTHESIS exp CLOSE_PARENTHESIS @processIf block @returnIf |
