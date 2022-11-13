@@ -1,0 +1,10 @@
+Baky programa;
+
+void Baky()
+var int j, i;
+var boolean pasa;
+var char c, d;
+{
+    i = 3*1.9;
+    write(i);
+}

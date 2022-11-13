@@ -17,6 +17,8 @@ class Quadruple {
         const [rightT, leftT] = [this.types.pop(), this.types.pop()];
         const type = this.semantics.semantiConstants.CUBE.validOperation(rightT, leftT, operator, line);
         const address = this.semantics.memory.assignMemory("local", type, true);
+        const typeMem = this.semantics.memory.getTypeFromAddress(address);
+        this.semantics.functionsTable[this.semantics.scopeStack.peek()].resources[typeMem]++;
         this.quadruples.push([operator, leftO, rightO, address]);
         this.operands.push(address);
         this.types.push(type);
@@ -88,16 +90,25 @@ class Quadruple {
         const forStart = this.operands.pop();
         const forStartT = this.types.pop();
         if (forStartT != "INT" && forStartT != "DOUBLE" || forEndT != "INT" && forEndT != "DOUBLE") throw new Error(`For must have int or double on line ${line}`);
+        
+        //TODO: Regresar var a valor inicial?
+
         this.jumps.push(this.quadruples.length);
         const type = this.semantics.semantiConstants.CUBE.validOperation(forStartT, forEndT, '<', line);
         const address = this.semantics.memory.assignMemory("local", type, true);
+        const typeMem = this.semantics.memory.getTypeFromAddress(address);
+        this.semantics.functionsTable[this.semantics.scopeStack.peek()].resources[typeMem]++;
         this.quadruples.push(["<", forStart, forEnd, address]);
         this.jumps.push(this.quadruples.length);
         this.quadruples.push(["gotoF", address, null, null]);
-        this.quadruples.push(["+", forStart, 1, forStart]);
+        this.operands.push(forStart);
     }
 
     endFor() {
+        const forStart = this.operands.pop();
+        this.processConstant(1, "INT");
+        this.types.pop();
+        this.quadruples.push(["+", forStart, this.operands.pop(), forStart]);
         const jumpForDone = this.jumps.pop();
         const jumpFor = this.jumps.pop();
         this.quadruples.push(["goto", null, null, jumpFor]);

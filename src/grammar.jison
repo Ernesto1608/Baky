@@ -9,6 +9,8 @@
 %}
 %%
 
+\/\/(.*) ;
+
 "Baky" { return "BAKY"; }
 
 "var" { return "VAR"; }
@@ -403,8 +405,8 @@ factor:
     OPEN_PARENTHESIS @pushBottom exp CLOSE_PARENTHESIS @popBottom |
     var |
     call |
-    INT_VALUE {yy.quadruple.processConstant($1,"INT");} |
-    DOUBLE_VALUE {yy.quadruple.processConstant($1,"DOUBLE");} |
-    CHAR_VALUE {yy.quadruple.processConstant($1,"CHAR");} |
-    STRING_VALUE {yy.quadruple.processConstant($1,"STRING");} |
-    BOOLEAN_VALUE {yy.quadruple.processConstant($1,"BOOLEAN");} ;
+    INT_VALUE {yy.quadruple.processConstant(parseInt($1),"INT");} |
+    DOUBLE_VALUE {yy.quadruple.processConstant(parseFloat($1),"DOUBLE");} |
+    CHAR_VALUE {yy.quadruple.processConstant($1.charAt(1),"CHAR");} |
+    STRING_VALUE {yy.quadruple.processConstant($1.slice(1,-1),"STRING");} |
+    BOOLEAN_VALUE {yy.quadruple.processConstant($1 == "true" ?  true :  false,"BOOLEAN");} ;

@@ -1,3 +1,5 @@
+const { Stack } = require("datastructures-js");
+
 class Memory {
     constructor() {
         this.allocation = {
@@ -32,7 +34,7 @@ class Memory {
             [
                 [],[],[],[],[]
             ],
-            [],
+            new Stack(),
             [
                 [],[],[],[],[]
             ]
@@ -68,6 +70,21 @@ class Memory {
         ];
     }
 
+    pushMemoryStack(resources) {
+        this.virtualMemory[1].push([
+            new Array(resources[0]).fill(0),
+            new Array(resources[1]).fill(0),
+            new Array(resources[2]).fill(""),
+            new Array(resources[3]).fill(''),
+            new Array(resources[4]).fill(false),
+            new Array(resources[5]).fill(0),
+            new Array(resources[6]).fill(0),
+            new Array(resources[7]).fill(""),
+            new Array(resources[8]).fill(''),
+            new Array(resources[9]).fill(false),
+        ]);
+    }
+
     assignMemory(scope, type, temp) {
         let typeMem = type;
         if(temp) typeMem = 'T' + typeMem;
@@ -91,6 +108,23 @@ class Memory {
             TCHAR: 13000,
             TBOOLEAN: 14000,
         };
+    }
+
+    getValueFromAddress(address) {
+        const scopeMem = this.getScopeFromAddress(address);
+        const typeMem = this.getTypeFromAddress(address);
+        return scopeMem == 1 ? this.virtualMemory[scopeMem].peek()[typeMem][address % 1000] :
+            this.virtualMemory[scopeMem][typeMem][address % 1000];
+    }
+
+    assignToAddress(address, value) {
+        const scopeMem = this.getScopeFromAddress(address);
+        const typeMem = this.getTypeFromAddress(address);
+        if (scopeMem == 1) {
+            this.virtualMemory[scopeMem].peek()[typeMem][address % 1000] = value;
+        } else {
+            this.virtualMemory[scopeMem][typeMem][address % 1000] = value;
+        }
     }
 }
 
