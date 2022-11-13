@@ -8,6 +8,7 @@ class Semantics {
         this.scopeStack = new Stack([undefined]);
         this.currentType = "VOID";
         this.functionsTable = {};
+        this.constsTable = {};
         this.semantiConstants = semantiConstants;
         this.memory = new Memory();
         this.currentFunctionCall = "";

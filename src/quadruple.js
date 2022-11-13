@@ -26,10 +26,17 @@ class Quadruple {
     }
 
     processConstant(value, type) {
-        const address = this.semantics.memory.assignMemory("cons", type, false)
+        let address, push = true;
+        if(this.semantics.constsTable[value] != undefined){
+            push = false;
+            address = this.semantics.constsTable[value];
+        } else {
+            address = this.semantics.memory.assignMemory("cons", type, false);
+            this.semantics.constsTable[value] = address;
+        }
         const scopeMem = this.semantics.memory.getScopeFromAddress(address);
         const typeMem = this.semantics.memory.getTypeFromAddress(address);
-        this.semantics.memory.virtualMemory[scopeMem][typeMem].push(value);
+        if(push) this.semantics.memory.virtualMemory[scopeMem][typeMem].push(value);
         this.operands.push(address);
         this.types.push(type);
     }

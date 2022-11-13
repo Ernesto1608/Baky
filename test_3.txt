@@ -27,7 +27,7 @@ var char c;
 
     c = 'h';
 
-    if(pasa == false){
+    if(pasa == true){
         read(j);
     }
     if(pasa || 34 > 4 && false) {
@@ -39,5 +39,9 @@ var char c;
 
     while(j>8){}
     write("done for");
+
+    i = 1;
+    write(i);
+    write(1);
     //func(1, 21);
 }
