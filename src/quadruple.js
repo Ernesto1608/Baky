@@ -134,6 +134,10 @@ class Quadruple {
         }
         this.quadruples.push(["init", this.semantics.currentFunctionCall, null, null]);
 
+        const returnLocal = this.semantics.functionsTable[this.semantics.currentFunctionCall].variablesTable[`_${this.semantics.currentFunctionCall}ReturnLocal`].address;
+        const ret = this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${this.semantics.currentFunctionCall}Return`].address;
+        this.quadruples.push(["=", returnLocal, ret, null]);
+
         temps.forEach((temp, i) => {
             this.quadruples.push(["=", paramsTable[i].address, temp, null]);
         });
@@ -149,7 +153,7 @@ class Quadruple {
     }
 
     createReturnFromFunction(id) {
-        const jump = this.quadruples.length + this.semantics.functionsTable[id].paramsTable.length * 2 + 3;
+        const jump = this.quadruples.length + this.semantics.functionsTable[id].paramsTable.length * 2 + 4;
         this.processConstant(jump, 'INT');
         const address =  this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${id}Return`].address;
         this.quadruples.push(["=", address, this.operands.pop(), null]);

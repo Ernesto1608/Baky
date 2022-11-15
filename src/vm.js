@@ -28,9 +28,11 @@ class VM {
         memory.pushMemoryStack(this.quadruple.semantics.functionsTable['Baky'].resources);
 
         let value, type;
-
+        let j = 0;
         for(let i = start; i < quads.length; i++) {
-            //console.log(i);
+            j++;
+            if(j > 100) break;
+            console.log(i);
             switch(quads[i][0]) {
                 case '+':
                     value = memory.getValueFromAddress(quads[i][1]) + memory.getValueFromAddress(quads[i][2]);

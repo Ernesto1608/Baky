@@ -1,10 +1,15 @@
 Baky programa;
 
+function int func(int n)
+{
+    write(n);
+    if(n <= 2) { return 1; }
+    return func(n-1);;
+}
+
 void Baky()
 var int j, i;
-var boolean pasa;
-var char c, d;
 {
-    i = 3*1.9;
+    i = func(3);;
     write(i);
 }
