@@ -1,15 +1,17 @@
 Baky programa;
 
 function int func(int n)
+var int j;
 {
-    write(n);
-    if(n <= 2) { return 1; }
-    return func(n-1);;
+    if(n == 1) { return 1; }
+    return n * func(n-1);;
 }
 
 void Baky()
 var int j, i;
 {
-    i = func(3);;
+    i = func(4);
     write(i);
 }
+
+//0, 1, 1, 2, 3, 5, 8, 13, 21, 34
