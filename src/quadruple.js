@@ -124,15 +124,34 @@ class Quadruple {
     }
 
     createFunctionJump() {
+        const jump = this.quadruples.length + this.semantics.functionsTable[this.semantics.currentFunctionCall].paramsTable.length * 2 + 4;
+        this.processConstant(jump, 'INT');
+        const address =  this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${this.semantics.currentFunctionCall}Return`].address;
+        this.quadruples.push(["=", address, this.operands.pop(), null]);
+        this.types.pop();
+
         const paramsTable = this.semantics.functionsTable[this.semantics.currentFunctionCall].paramsTable;
         let temps = [];
         for(let i = paramsTable.length-1; i >= 0; i--) {
             const operand = this.operands.pop();
-            const address = this.semantics.memory.assignMemory("global", paramsTable[i].type, false);
+            let address;
+            if(this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${paramsTable[i].id}`] != undefined) {
+                address = this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${paramsTable[i].id}`].address
+            } else {
+                address = this.semantics.memory.assignMemory("global", paramsTable[i].type, false);
+                this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${paramsTable[i].id}`] = {
+                    type: paramsTable[i].type,
+                    address,
+                }
+            }
             temps.unshift(address);
             this.quadruples.push(["=", address, operand, null]);
         }
         this.quadruples.push(["init", this.semantics.currentFunctionCall, null, null]);
+
+        const returnLocal = this.semantics.functionsTable[this.semantics.currentFunctionCall].variablesTable[`_${this.semantics.currentFunctionCall}ReturnLocal`].address;
+        const ret = this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${this.semantics.currentFunctionCall}Return`].address;
+        this.quadruples.push(["=", returnLocal, ret, null]);
 
         temps.forEach((temp, i) => {
             this.quadruples.push(["=", paramsTable[i].address, temp, null]);
@@ -142,18 +161,14 @@ class Quadruple {
         const type = this.semantics.functionsTable[this.semantics.currentFunctionCall].type;
         this.quadruples.push(["goto", null, null, funcStart]);
         const addressTemp = this.semantics.memory.assignMemory("local", type, true);
-        const address =  this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${this.semantics.currentFunctionCall}`].address;
-        this.quadruples.push(["=", addressTemp, address, null]);
+        const addressRet =  this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${this.semantics.currentFunctionCall}`].address;
+        this.quadruples.push(["=", addressTemp, addressRet, null]);
         this.operands.push(addressTemp);
         this.types.push(type);
     }
 
     createReturnFromFunction(id) {
-        const jump = this.quadruples.length + this.semantics.functionsTable[id].paramsTable.length * 2 + 3;
-        this.processConstant(jump, 'INT');
-        const address =  this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${id}Return`].address;
-        this.quadruples.push(["=", address, this.operands.pop(), null]);
-        this.types.pop();
+        //console.log(this.operands.peek());
     }
 
     createParam(line) {
@@ -166,9 +181,11 @@ class Quadruple {
     }
 
     returnFromFunction(scope) {
-        const address =  this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${scope}Return`].address;
+        const address =  this.semantics.functionsTable[scope].variablesTable[`_${scope}ReturnLocal`].address;
+        const addressGlobal =  this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${scope}Return`].address;
+        this.quadruples.push(["=", addressGlobal, address, null])
         this.quadruples.push(["popScope", null, null, null]);
-        this.quadruples.push(["goto", "value", null, address]);
+        this.quadruples.push(["goto", "value", null, addressGlobal]);
         //TODO: solo se hace el popScope cuando tiene un return
     }
 

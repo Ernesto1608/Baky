@@ -107,10 +107,10 @@
 
 @popScope: {
     let currentScope = yy.quadruple.semantics.scopeStack.pop();
-    // yy.quadruple.semantics.functionsTable[currentScope].variablesTable = {};
     if(currentScope != "Baky") {
         yy.quadruple.returnFromFunction(currentScope);
     }
+    //yy.quadruple.semantics.functionsTable[currentScope].variablesTable = {};
 };
 
 @createVariable: {
@@ -328,8 +328,8 @@ statute:
     for;
 
 call:
-    ID OPEN_PARENTHESIS @validateFunction CLOSE_PARENTHESIS @validateParams SEMICOLON |
-    ID OPEN_PARENTHESIS @validateFunction call_aux CLOSE_PARENTHESIS @validateParams SEMICOLON;
+    ID OPEN_PARENTHESIS @validateFunction @pushBottom CLOSE_PARENTHESIS @popBottom @validateParams SEMICOLON |
+    ID OPEN_PARENTHESIS @validateFunction @pushBottom call_aux CLOSE_PARENTHESIS @popBottom @validateParams SEMICOLON;
 
 call_aux:
     exp @createParam |

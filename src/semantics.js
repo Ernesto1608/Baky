@@ -43,9 +43,17 @@ class Semantics {
                 type: this.currentType,
                 address
             }
+            
         }
         this.scopeStack.push(id);
         this.memory.resetLocalMemory();
+        if(id != "Baky"){
+            const addressLocal = this.memory.assignMemory("local", this.currentType, false);
+            this.functionsTable[id].variablesTable[`_${id}ReturnLocal`] = {
+                type: this.currentType,
+                address: addressLocal
+            }
+        }
     }
 
     createVariable(id, line){
