@@ -1,4 +1,6 @@
 const readline = require("readline");
+const { Stack } = require("datastructures-js");
+
 
 function askInput() {
     const rl = readline.createInterface({
@@ -16,6 +18,7 @@ class VM {
     constructor(quadruple) {
         this.quadruple = quadruple;
         this.functionsSize = {};
+        this.returns = new Stack();
     }
 
     async run() {
@@ -131,11 +134,10 @@ class VM {
                     }
                     break;
                 case 'goto':
-                    if (quads[i][1] == 'value') {
-                        value = memory.getValueFromAddress(quads[i][3]);
-                        i = value-1;
-                        break;
-                    }
+                    i = quads[i][3]-1;
+                    break;
+                case 'gosub':
+                    this.returns.push(i);
                     i = quads[i][3]-1;
                     break;
                 case 'init':
@@ -143,6 +145,7 @@ class VM {
                     break;
                 case 'popScope':
                     memory.virtualMemory[1].pop();
+                    i = this.returns.pop();
                     break;
             }
             //console.log(i + " : " + JSON.stringify(quads[i], null, 4))

@@ -38,23 +38,8 @@ class Semantics {
                 address
             }
         }
-        if(id != "Baky"){
-            const address = this.memory.assignMemory("global", "INT", false);
-            this.functionsTable[this.globalName].variablesTable[`_${id}Return`] = {
-                type: this.currentType,
-                address
-            }
-            
-        }
         this.scopeStack.push(id);
         this.memory.resetLocalMemory();
-        if(id != "Baky"){
-            const addressLocal = this.memory.assignMemory("local", "INT", false);
-            this.functionsTable[id].variablesTable[`_${id}ReturnLocal`] = {
-                type: this.currentType,
-                address: addressLocal
-            }
-        }
     }
 
     createVariable(id, line){

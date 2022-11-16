@@ -125,12 +125,6 @@ class Quadruple {
     }
 
     createFunctionJump() {
-        const jump = this.quadruples.length + this.semantics.functionsTable[this.semantics.currentFunctionCall].paramsTable.length * 2 + 4;
-        this.processConstant(jump, 'INT');
-        const address =  this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${this.semantics.currentFunctionCall}Return`].address;
-        this.quadruples.push(["=", address, this.operands.pop(), null]);
-        this.types.pop();
-
         const paramsTable = this.semantics.functionsTable[this.semantics.currentFunctionCall].paramsTable;
         let temps = [];
         for(let i = paramsTable.length-1; i >= 0; i--) {
@@ -150,18 +144,14 @@ class Quadruple {
         }
         this.quadruples.push(["init", this.semantics.currentFunctionCall, null, null]);
 
-        const returnLocal = this.semantics.functionsTable[this.semantics.currentFunctionCall].variablesTable[`_${this.semantics.currentFunctionCall}ReturnLocal`].address;
-        const ret = this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${this.semantics.currentFunctionCall}Return`].address;
-        this.quadruples.push(["=", returnLocal, ret, null]);
-
         temps.forEach((temp, i) => {
             this.quadruples.push(["=", paramsTable[i].address, temp, null]);
         });
 
         const funcStart = this.semantics.functionsTable[this.semantics.currentFunctionCall].start;
         const type = this.semantics.functionsTable[this.semantics.currentFunctionCall].type;
-        this.quadruples.push(["goto", null, null, funcStart]);
-        if(this.semantics.functionsTable[this.semantics.currentFunctionCall].type != "VOID"){
+        this.quadruples.push(["gosub", null, null, funcStart]);
+        if(type != "VOID"){
             const addressTemp = this.semantics.memory.assignMemory("local", type, true);
             const addressRet =  this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${this.semantics.currentFunctionCall}`].address;
             this.quadruples.push(["=", addressTemp, addressRet, null]);
@@ -188,11 +178,7 @@ class Quadruple {
         if(!this.semantics.functionsTable[scope].return && this.semantics.functionsTable[scope].type != "VOID") {
             throw new Error(`Mising return on function '${scope}'`);
         }
-        const address =  this.semantics.functionsTable[scope].variablesTable[`_${scope}ReturnLocal`].address;
-        const addressGlobal =  this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${scope}Return`].address;
-        this.quadruples.push(["=", addressGlobal, address, null])
         this.quadruples.push(["popScope", null, null, null]);
-        this.quadruples.push(["goto", "value", null, addressGlobal]);
         //TODO: solo se hace el popScope cuando tiene un return
     }
 
