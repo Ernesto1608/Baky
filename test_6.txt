@@ -1,0 +1,16 @@
+Baky arreglos;
+
+var int j,k;
+var double r;
+
+function void or(int i){
+    write(i);
+}
+
+void Baky()
+var int m,or;
+{
+    write(1/2);
+}
+
+// 1 1 2 3 5 8 13 21 34 55 89

@@ -93,7 +93,6 @@
 
 @validateFunction: {
     yy.quadruple.semantics.validateFunction($0, yy.mylineno);
-    yy.quadruple.createReturnFromFunction($0);
 };
 
 @validateParams: {
@@ -125,16 +124,8 @@
     yy.quadruple.semantics.createVariableArray($-2, yy.mylineno, "ARRAY", [$0]);
 };
 
-@createVariableArrayParam: {
-    yy.quadruple.semantics.createVariableArray($-1, yy.mylineno, "ARRAY", []);
-};
-
 @createVariableMatrix: {
     yy.quadruple.semantics.createVariableArray($-5, yy.mylineno, "MATRIX", [$-3, $0]);
-};
-
-@createVariableMatrixParam: {
-    yy.quadruple.semantics.createVariableArray($-3, yy.mylineno, "MATRIX", []);
 };
 
 @processFor: {
@@ -213,7 +204,7 @@
 };
 
 @processWrite: {
-    yy.quadruple.processWrite();
+    yy.quadruple.processWrite(yy.mylineno);
 };
 
 @processRead: {
@@ -309,16 +300,10 @@ params: |
 //Falta cambiar los params de matriz y arreglos
 params_aux:
     type ID @createParameter |
-    type ID @createParameter COMA params_aux |
-    type ID OPEN_SQUARE_BRACKET CLOSE_SQUARE_BRACKET @createVariableArrayParam |
-    type ID OPEN_SQUARE_BRACKET CLOSE_SQUARE_BRACKET @createVariableArrayParam COMA params_aux |
-    type ID OPEN_SQUARE_BRACKET CLOSE_SQUARE_BRACKET
-        OPEN_SQUARE_BRACKET CLOSE_SQUARE_BRACKET @createVariableMatrixParam |
-    type ID OPEN_SQUARE_BRACKET CLOSE_SQUARE_BRACKET
-        OPEN_SQUARE_BRACKET CLOSE_SQUARE_BRACKET @createVariableMatrixParam COMA params_aux;
+    type ID @createParameter COMA params_aux;
 
 statute:
-    call |
+    call SEMICOLON |
     return |
     read |
     write |
@@ -328,8 +313,8 @@ statute:
     for;
 
 call:
-    ID OPEN_PARENTHESIS @validateFunction @pushBottom CLOSE_PARENTHESIS @popBottom @validateParams SEMICOLON |
-    ID OPEN_PARENTHESIS @validateFunction @pushBottom call_aux CLOSE_PARENTHESIS @popBottom @validateParams SEMICOLON;
+    ID OPEN_PARENTHESIS @validateFunction @pushBottom CLOSE_PARENTHESIS @popBottom @validateParams |
+    ID OPEN_PARENTHESIS @validateFunction @pushBottom call_aux CLOSE_PARENTHESIS @popBottom @validateParams;
 
 call_aux:
     exp @createParam |
@@ -353,8 +338,7 @@ write_aux:
     exp @processWrite COMA write_aux;
 
 assign:
-    var EQUAL @pushOperator exp @processAssign SEMICOLON |
-    var EQUAL @pushOperator call @processAssign;
+    var EQUAL @pushOperator exp @processAssign SEMICOLON;
 
 if:
     IF OPEN_PARENTHESIS exp CLOSE_PARENTHESIS @processIf block @returnIf |

@@ -16,7 +16,7 @@ class Quadruple {
     processOperator(operator, line) {
         const [rightO, leftO] = [this.operands.pop(), this.operands.pop()];
         const [rightT, leftT] = [this.types.pop(), this.types.pop()];
-        const type = this.semantics.semantiConstants.CUBE.validOperation(rightT, leftT, operator, line);
+        const type = this.semantics.semantiConstants.CUBE.validOperation(leftT, rightT, operator, line);
         const address = this.semantics.memory.assignMemory("local", type, true);
         const typeMem = this.semantics.memory.getTypeFromAddress(address);
         this.semantics.functionsTable[this.semantics.scopeStack.peek()].resources[typeMem]++;
@@ -45,14 +45,15 @@ class Quadruple {
     processAssign(operator, line) {
         const [rightO, leftO] = [this.operands.pop(), this.operands.pop()];
         const [rightT, leftT] = [this.types.pop(), this.types.pop()];
-        this.semantics.semantiConstants.CUBE.validOperation(rightT, leftT, operator, line);
+        this.semantics.semantiConstants.CUBE.validOperation(leftT, rightT, operator, line);
         this.quadruples.push([operator, leftO, rightO, null]);
         this.operators.pop();
     }
 
-    processWrite() {
+    processWrite(line) {
         const [rightO] = [this.operands.pop()];
         const [rightT] = [this.types.pop()];
+        if(rightT == "VOID") throw new Error(`Cannot write void value on line ${line}`); 
         this.quadruples.push(["write", rightO, null, null]);
     }
 
@@ -160,18 +161,21 @@ class Quadruple {
         const funcStart = this.semantics.functionsTable[this.semantics.currentFunctionCall].start;
         const type = this.semantics.functionsTable[this.semantics.currentFunctionCall].type;
         this.quadruples.push(["goto", null, null, funcStart]);
-        const addressTemp = this.semantics.memory.assignMemory("local", type, true);
-        const addressRet =  this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${this.semantics.currentFunctionCall}`].address;
-        this.quadruples.push(["=", addressTemp, addressRet, null]);
-        this.operands.push(addressTemp);
+        if(this.semantics.functionsTable[this.semantics.currentFunctionCall].type != "VOID"){
+            const addressTemp = this.semantics.memory.assignMemory("local", type, true);
+            const addressRet =  this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${this.semantics.currentFunctionCall}`].address;
+            this.quadruples.push(["=", addressTemp, addressRet, null]);
+            this.operands.push(addressTemp);
+        } else {
+            this.operands.push('_');
+        }
         this.types.push(type);
     }
 
-    createReturnFromFunction(id) {
-        //console.log(this.operands.peek());
-    }
-
     createParam(line) {
+        if(this.semantics.expectedParams < this.semantics.paramsCounter + 1) {
+            throw new Error(`Number of parameters doesn't match function definition for ${this.currentFunctionCall} in line ${line}`);
+        }
         const type = this.types.pop();
         const param = this.semantics.functionsTable[this.semantics.currentFunctionCall].paramsTable[this.semantics.paramsCounter];
         if(param.type != type) {
@@ -181,6 +185,9 @@ class Quadruple {
     }
 
     returnFromFunction(scope) {
+        if(!this.semantics.functionsTable[scope].return && this.semantics.functionsTable[scope].type != "VOID") {
+            throw new Error(`Mising return on function '${scope}'`);
+        }
         const address =  this.semantics.functionsTable[scope].variablesTable[`_${scope}ReturnLocal`].address;
         const addressGlobal =  this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${scope}Return`].address;
         this.quadruples.push(["=", addressGlobal, address, null])
@@ -193,6 +200,10 @@ class Quadruple {
         const operand = this.operands.pop();
         const type = this.types.pop();
         const scope = this.semantics.scopeStack.peek();
+        this.semantics.functionsTable[scope].return = true;
+        if(this.semantics.functionsTable[scope].type == "VOID") {
+            throw new Error(`Unexpected return on line ${line}`);
+        }
         if(this.semantics.functionsTable[scope].type != type) {
             throw new Error(`Wrong return type on line ${line}`);
         }

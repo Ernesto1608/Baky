@@ -103,7 +103,7 @@ const CUBE = Object.freeze({
         },
     },
     validOperation: function(type1, type2, operator, line) {
-        if (this[type1][type2] && this[type1][type2][operator]) return this[type1][type2][operator];
+        if (type1 != "VOID" && this[type1][type2] && this[type1][type2][operator]) return this[type1][type2][operator];
         throw new Error(`Invalid operation ${type1} ${operator} ${type2} on line ${line}`);
     }
 });
