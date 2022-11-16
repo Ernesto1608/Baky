@@ -2,12 +2,36 @@ Baky arreglos;
 
 var int j[10],k;
 
-void Baky()
-var int m[10][2],or;
+function int fib(int n)
+var int i;
 {
-    m[0][0] = 1;
-    m[m[m[1][1]][0]][0] = m[0][0] + 10;
-    write(m[0][0], m[1][0]);
+    i = 0-3;
+    if(n<=2) {return 1;}
+    return 1;
+}
+
+function void r(){
+    write("mlp");
+}
+
+void Baky()
+var int m[10][2],i,j;
+{
+    from i to 10 do {
+        from j to 2 do {
+            m[i][j] = i+j;
+        }
+        j=0;
+    }
+    fib(3);
+    r();
+    i=0;
+    from i to 10 do {
+        from j to 2 do {
+            write(m[i][j]);
+        }
+        j=0;
+    }
 }
 
 // 1 1 2 3 5 8 13 21 34 55 89

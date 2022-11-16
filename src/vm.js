@@ -157,11 +157,11 @@ class VM {
                         throw new Error(`Value '${value}' out of bounds for array`);
                     }
                     break;
+                case 'returnError':
+                    throw new Error(`Expecting valid return on function '${quads[i][1]}'`);
+                    break;
             }
-            // console.log(i + " : " + JSON.stringify(quads[i], null, 4))
         }
-
-        //console.log(JSON.stringify(memory.virtualMemory));
     }
 }
 

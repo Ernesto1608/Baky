@@ -57,10 +57,10 @@
 ">" { return "GREATER_THAN"; }
 
 (true|false) { return "BOOLEAN_VALUE"; }
-[+-]?[0-9]+\.[0-9]+ { return "DOUBLE_VALUE"; }
-[+-]?[0-9]+ { return "INT_VALUE"; }
 "+" { return "PLUS"; }
 "-" { return "MINUS"; }
+[+-]?[0-9]+\.[0-9]+ { return "DOUBLE_VALUE"; }
+[+-]?[0-9]+ { return "INT_VALUE"; }
 \"[^\"]*\" { return "STRING_VALUE"; }
 \'.\' { return "CHAR_VALUE"; }
 [a-zA-z]\w* { return "ID"; }
@@ -109,7 +109,12 @@
     if(currentScope != "Baky") {
         yy.quadruple.returnFromFunction(currentScope);
     }
-    //yy.quadruple.semantics.functionsTable[currentScope].variablesTable = {};
+    yy.quadruple.semantics.functionsTable[currentScope].variablesTable = {};
+};
+
+@returnError: {
+    let currentScopeF = yy.quadruple.semantics.scopeStack.peek();
+    yy.quadruple.quadruples.push(["returnError", currentScopeF, null, null]);
 };
 
 @createVariable: {
@@ -247,13 +252,11 @@
 
 baky:
     BAKY ID @createProgram SEMICOLON vars @fillGlobalMemory funcs main {
-        // yy.quadruple.semantics.functionsTable = {};
-        // console.log(JSON.stringify(yy.quadruple.quadruples, null, 4));
-        for(let i = 0; i < yy.quadruple.quadruples.length; i++) {
-            console.log(i + " : " + yy.quadruple.quadruples[i]);
-        }
-        console.log(JSON.stringify(yy.quadruple.semantics.functionsTable, null, 4));
-        console.log(yy.quadruple.semantics.memory.virtualMemory);
+        // for(let i = 0; i < yy.quadruple.quadruples.length; i++) {
+        //     console.log(i + " : " + yy.quadruple.quadruples[i]);
+        // }
+        // console.log(JSON.stringify(yy.quadruple.semantics.functionsTable, null, 4));
+        // console.log(yy.quadruple.semantics.memory.virtualMemory);
         console.log(`Successful compilation of program ${yy.quadruple.semantics.globalName}`);
     };
 
@@ -287,7 +290,7 @@ type:
     BOOLEAN {yy.quadruple.semantics.currentType = "BOOLEAN";};
 
 function:
-    FUNCTION type ID @createFunction OPEN_PARENTHESIS params CLOSE_PARENTHESIS vars block @popScope |
+    FUNCTION type ID @createFunction OPEN_PARENTHESIS params CLOSE_PARENTHESIS vars block @returnError @popScope |
     FUNCTION VOID ID @createFunction OPEN_PARENTHESIS params CLOSE_PARENTHESIS vars block @popScope;
 
 block:
@@ -299,7 +302,6 @@ block_aux: |
 params: |
     params_aux;
 
-//Falta cambiar los params de matriz y arreglos
 params_aux:
     type ID @createParameter |
     type ID @createParameter COMA params_aux;

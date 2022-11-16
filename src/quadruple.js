@@ -139,8 +139,6 @@ class Quadruple {
         const forStart = this.operands.pop();
         const forStartT = this.types.pop();
         if (forStartT != "INT" && forStartT != "DOUBLE" || forEndT != "INT" && forEndT != "DOUBLE") throw new Error(`For must have int or double on line ${line}`);
-        
-        //TODO: Regresar var a valor inicial?
 
         this.jumps.push(this.quadruples.length);
         const type = this.semantics.semantiConstants.CUBE.validOperation(forStartT, forEndT, '<', line);
@@ -219,7 +217,6 @@ class Quadruple {
             throw new Error(`Mising return on function '${scope}'`);
         }
         this.quadruples.push(["popScope", null, null, null]);
-        //TODO: solo se hace el popScope cuando tiene un return
     }
 
     handleReturn(line) {
