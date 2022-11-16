@@ -40,6 +40,10 @@ class VM {
                     value = memory.getValueFromAddress(quads[i][1]) + memory.getValueFromAddress(quads[i][2]);
                     memory.assignToAddress(quads[i][3], value);
                     break;
+                case 'sumP':
+                    value = memory.getValueFromAddress(quads[i][1]) + memory.getValueFromAddress(quads[i][2]);
+                    memory.assignToAddressPointer(quads[i][3], value);
+                    break;
                 case '-':
                     value = memory.getValueFromAddress(quads[i][1]) - memory.getValueFromAddress(quads[i][2]);
                     memory.assignToAddress(quads[i][3], value);
@@ -147,8 +151,14 @@ class VM {
                     memory.virtualMemory[1].pop();
                     i = this.returns.pop();
                     break;
+                case 'ver':
+                    value = memory.getValueFromAddress(quads[i][1]);
+                    if(value < quads[i][2] || value >= quads[i][3]) {
+                        throw new Error(`Value '${value}' out of bounds for array`);
+                    }
+                    break;
             }
-            //console.log(i + " : " + JSON.stringify(quads[i], null, 4))
+            // console.log(i + " : " + JSON.stringify(quads[i], null, 4))
         }
 
         //console.log(JSON.stringify(memory.virtualMemory));

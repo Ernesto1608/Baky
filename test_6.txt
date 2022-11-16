@@ -1,23 +1,13 @@
 Baky arreglos;
 
-var int j,k;
-var double r;
-
-function void or(int i){
-    write(i);
-}
-
-function int fib(int n){
-    if(n<=2) {return 1;}
-    return fib(n-1)+fib(n-2);
-}
+var int j[10],k;
 
 void Baky()
-var int m,or;
+var int m[10][2],or;
 {
-    or(1);
-    write(1/2);
-    write(fib(11));
+    m[0][0] = 1;
+    m[m[m[1][1]][0]][0] = m[0][0] + 10;
+    write(m[0][0], m[1][0]);
 }
 
 // 1 1 2 3 5 8 13 21 34 55 89

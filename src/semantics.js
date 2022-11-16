@@ -20,7 +20,7 @@ class Semantics {
         if(this.functionsTable[id]){
             throw new Error(`Duplicated function name ${id} on line ${line}`);
         }
-        let resourcesSize = 10;
+        let resourcesSize = 11;
         if(id == this.globalName) resourcesSize = 5;
         this.functionsTable[id] = {
             type: this.currentType,
@@ -32,7 +32,7 @@ class Semantics {
             return: false
         }
         if(this.currentType != "VOID") {
-            const address = this.memory.assignMemory("global", this.currentType, false);
+            const address = this.memory.assignMemory("global", this.currentType, false, 1);
             this.functionsTable[this.globalName].variablesTable[`_${id}`] = {
                 type: this.currentType,
                 address
@@ -49,7 +49,7 @@ class Semantics {
         }
         let scopeMem = "local";
         if(currentScope == this.globalName) scopeMem = "global";
-        const address = this.memory.assignMemory(scopeMem, this.currentType, false);
+        const address = this.memory.assignMemory(scopeMem, this.currentType, false, 1);
         const typeMem = this.memory.getTypeFromAddress(address);
         this.functionsTable[currentScope].resources[typeMem]++;
         this.functionsTable[currentScope].variablesTable[id] = {
@@ -60,13 +60,21 @@ class Semantics {
 
     createVariableArray(id, line, supertype, dimensions){
         const currentScope = this.scopeStack.peek();
+        const size = dimensions.length == 1 ? dimensions[0] : dimensions[0]*dimensions[1];
         if(this.functionsTable[currentScope].variablesTable[id]){
             throw new Error(`Duplicated variable name ${id} on line ${line} on scope ${currentScope}`);
         }
+        let scopeMem = "local";
+        if(currentScope == this.globalName) scopeMem = "global";
+        const address = this.memory.assignMemory(scopeMem, this.currentType, false, Number(size));
+        const typeMem = this.memory.getTypeFromAddress(address);
+        this.functionsTable[currentScope].resources[typeMem]+= Number(size);
         this.functionsTable[currentScope].variablesTable[id] = {
             type: this.currentType,
+            address: address,
             supertype: supertype,
             dimensions: dimensions,
+            size: size,
         }
     }
 
@@ -112,7 +120,7 @@ class Semantics {
         }
         let scopeMem = "local";
         if(currentScope == this.globalName) scopeMem = "global";
-        const address = this.memory.assignMemory(scopeMem, this.currentType, false);
+        const address = this.memory.assignMemory(scopeMem, this.currentType, false, 1);
         this.functionsTable[currentScope].variablesTable[id] = {
             type: this.currentType,
             address

@@ -48,8 +48,6 @@
 "=" { return "EQUAL"; }
 "||" { return "OR"; }
 "&&" { return "AND"; }
-"+" { return "PLUS"; }
-"-" { return "MINUS"; }
 "*" { return "TIMES"; }
 "/" { return "DIVIDED"; }
 "!=" { return "NOT_EQUAL"; }
@@ -61,6 +59,8 @@
 (true|false) { return "BOOLEAN_VALUE"; }
 [+-]?[0-9]+\.[0-9]+ { return "DOUBLE_VALUE"; }
 [+-]?[0-9]+ { return "INT_VALUE"; }
+"+" { return "PLUS"; }
+"-" { return "MINUS"; }
 \"[^\"]*\" { return "STRING_VALUE"; }
 \'.\' { return "CHAR_VALUE"; }
 [a-zA-z]\w* { return "ID"; }
@@ -143,15 +143,17 @@
 };
 
 @validateArray: {
-    let typeA = yy.quadruple.semantics.validateVariable($-2, yy.mylineno, "ARRAY");
-    yy.quadruple.operands.push($-2);
-    yy.quadruple.types.push(typeA);
+    let typeA = yy.quadruple.semantics.validateVariable($-4, yy.mylineno, "ARRAY");
+    let addArray = yy.quadruple.processArray(typeA);
+    yy.quadruple.operands.push(addArray);
+    yy.quadruple.types.push(typeA.type);
 };
 
 @validateMatrix: {
-    let typeM = yy.quadruple.semantics.validateVariable($-5, yy.mylineno, "MATRIX");
-    yy.quadruple.operands.push($-5);
-    yy.quadruple.types.push(typeM);
+    let typeM = yy.quadruple.semantics.validateVariable($-9, yy.mylineno, "MATRIX");
+    let addMatrix = yy.quadruple.processMatrix(typeM);
+    yy.quadruple.operands.push(addMatrix);
+    yy.quadruple.types.push(typeM.type);
 };
 
 @pushOperator: {
@@ -356,9 +358,9 @@ exp:
 
 var:
     ID @validateVariable |
-    ID OPEN_SQUARE_BRACKET exp CLOSE_SQUARE_BRACKET @validateArray |
-    ID OPEN_SQUARE_BRACKET exp CLOSE_SQUARE_BRACKET
-        OPEN_SQUARE_BRACKET exp CLOSE_SQUARE_BRACKET @validateMatrix;
+    ID OPEN_SQUARE_BRACKET @pushBottom exp CLOSE_SQUARE_BRACKET @popBottom @validateArray |
+    ID OPEN_SQUARE_BRACKET @pushBottom exp CLOSE_SQUARE_BRACKET @popBottom
+        OPEN_SQUARE_BRACKET @pushBottom exp CLOSE_SQUARE_BRACKET @popBottom @validateMatrix;
 
 superexp:
     megaexp @processOperatorN4 |

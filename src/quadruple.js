@@ -17,7 +17,7 @@ class Quadruple {
         const [rightO, leftO] = [this.operands.pop(), this.operands.pop()];
         const [rightT, leftT] = [this.types.pop(), this.types.pop()];
         const type = this.semantics.semantiConstants.CUBE.validOperation(leftT, rightT, operator, line);
-        const address = this.semantics.memory.assignMemory("local", type, true);
+        const address = this.semantics.memory.assignMemory("local", type, true, 1);
         const typeMem = this.semantics.memory.getTypeFromAddress(address);
         this.semantics.functionsTable[this.semantics.scopeStack.peek()].resources[typeMem]++;
         this.quadruples.push([operator, leftO, rightO, address]);
@@ -32,7 +32,7 @@ class Quadruple {
             push = false;
             address = this.semantics.constsTable[value];
         } else {
-            address = this.semantics.memory.assignMemory("cons", type, false);
+            address = this.semantics.memory.assignMemory("cons", type, false, 1);
             this.semantics.constsTable[value] = address;
         }
         const scopeMem = this.semantics.memory.getScopeFromAddress(address);
@@ -48,6 +48,46 @@ class Quadruple {
         this.semantics.semantiConstants.CUBE.validOperation(leftT, rightT, operator, line);
         this.quadruples.push([operator, leftO, rightO, null]);
         this.operators.pop();
+    }
+
+    processArray(variable) {
+        const [rightO] = [this.operands.pop()];
+        const [rightT] = [this.types.pop()];
+        if(rightT != "INT") throw new Error(`Array index must be int on line ${line}`);
+        this.quadruples.push(["ver", rightO, 0, variable.dimensions[0]]);
+        this.processConstant(variable.address, "INT");
+        this.types.pop();
+
+        const address = this.semantics.memory.assignMemory("local", "POINTER", true, 1);
+        const typeMem = this.semantics.memory.getTypeFromAddress(address);
+        this.semantics.functionsTable[this.semantics.scopeStack.peek()].resources[typeMem]++;
+        this.quadruples.push(["sumP", rightO, this.operands.pop(), address]);
+        return address;
+    }
+
+    processMatrix(variable) {
+        const [colO, rowO] = [this.operands.pop(), this.operands.pop()];
+        const [colT, rowT] = [this.types.pop(), this.types.pop()];
+        if(colT != "INT" || rowT != "INT") throw new Error(`Matrix index must be int on line ${line}`);
+        this.quadruples.push(["ver", rowO, 0, variable.dimensions[0]]);
+        this.quadruples.push(["ver", colO, 0, variable.dimensions[1]]);
+
+        const address = this.semantics.memory.assignMemory("local", "INT", true, 1);
+        let typeMem = this.semantics.memory.getTypeFromAddress(address);
+        this.semantics.functionsTable[this.semantics.scopeStack.peek()].resources[typeMem]++;
+        this.processConstant(variable.dimensions[1], "INT");
+        this.types.pop();
+        this.quadruples.push(["*", rowO, this.operands.pop(), address]);
+        this.quadruples.push(["+", address, colO, address]);
+
+        this.processConstant(variable.address, "INT");
+        this.types.pop();
+
+        const addressP = this.semantics.memory.assignMemory("local", "POINTER", true, 1);
+        typeMem = this.semantics.memory.getTypeFromAddress(addressP);
+        this.semantics.functionsTable[this.semantics.scopeStack.peek()].resources[typeMem]++;
+        this.quadruples.push(["sumP", address, this.operands.pop(), addressP]);
+        return addressP;
     }
 
     processWrite(line) {
@@ -104,7 +144,7 @@ class Quadruple {
 
         this.jumps.push(this.quadruples.length);
         const type = this.semantics.semantiConstants.CUBE.validOperation(forStartT, forEndT, '<', line);
-        const address = this.semantics.memory.assignMemory("local", type, true);
+        const address = this.semantics.memory.assignMemory("local", type, true, 1);
         const typeMem = this.semantics.memory.getTypeFromAddress(address);
         this.semantics.functionsTable[this.semantics.scopeStack.peek()].resources[typeMem]++;
         this.quadruples.push(["<", forStart, forEnd, address]);
@@ -133,7 +173,7 @@ class Quadruple {
             if(this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${paramsTable[i].id}`] != undefined) {
                 address = this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${paramsTable[i].id}`].address
             } else {
-                address = this.semantics.memory.assignMemory("global", paramsTable[i].type, false);
+                address = this.semantics.memory.assignMemory("global", paramsTable[i].type, false, 1);
                 this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${paramsTable[i].id}`] = {
                     type: paramsTable[i].type,
                     address,
@@ -152,7 +192,7 @@ class Quadruple {
         const type = this.semantics.functionsTable[this.semantics.currentFunctionCall].type;
         this.quadruples.push(["gosub", null, null, funcStart]);
         if(type != "VOID"){
-            const addressTemp = this.semantics.memory.assignMemory("local", type, true);
+            const addressTemp = this.semantics.memory.assignMemory("local", type, true, 1);
             const addressRet =  this.semantics.functionsTable[this.semantics.globalName].variablesTable[`_${this.semantics.currentFunctionCall}`].address;
             this.quadruples.push(["=", addressTemp, addressRet, null]);
             this.operands.push(addressTemp);
