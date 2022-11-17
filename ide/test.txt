@@ -1,0 +1,587 @@
+{
+  "lex": {
+    "rules": [
+      [
+        "\\/\\/(.*)",
+        ";"
+      ],
+      [
+        "Baky\\b",
+        " return \"BAKY\"; "
+      ],
+      [
+        "var\\b",
+        " return \"VAR\"; "
+      ],
+      [
+        "int\\b",
+        " return \"INT\"; "
+      ],
+      [
+        "double\\b",
+        " return \"DOUBLE\"; "
+      ],
+      [
+        "string\\b",
+        " return \"STRING\"; "
+      ],
+      [
+        "char\\b",
+        " return \"CHAR\"; "
+      ],
+      [
+        "boolean\\b",
+        " return \"BOOLEAN\"; "
+      ],
+      [
+        "function\\b",
+        " return \"FUNCTION\"; "
+      ],
+      [
+        "void\\b",
+        " return \"VOID\"; "
+      ],
+      [
+        "return\\b",
+        " return \"RETURN\"; "
+      ],
+      [
+        "read\\b",
+        " return \"READ\"; "
+      ],
+      [
+        "write\\b",
+        " return \"WRITE\"; "
+      ],
+      [
+        "if\\b",
+        " return \"IF\"; "
+      ],
+      [
+        "else\\b",
+        " return \"ELSE\"; "
+      ],
+      [
+        "while\\b",
+        " return \"WHILE\"; "
+      ],
+      [
+        "from\\b",
+        " return \"FROM\"; "
+      ],
+      [
+        "to\\b",
+        " return \"TO\"; "
+      ],
+      [
+        "do\\b",
+        " return \"DO\"; "
+      ],
+      [
+        ";",
+        " return \"SEMICOLON\"; "
+      ],
+      [
+        ",",
+        " return \"COMA\"; "
+      ],
+      [
+        "\\[",
+        " return \"OPEN_SQUARE_BRACKET\"; "
+      ],
+      [
+        "\\]",
+        " return \"CLOSE_SQUARE_BRACKET\"; "
+      ],
+      [
+        "\\{",
+        " return \"OPEN_CURLY_BRACKET\"; "
+      ],
+      [
+        "\\}",
+        " return \"CLOSE_CURLY_BRACKET\"; "
+      ],
+      [
+        "\\(",
+        " return \"OPEN_PARENTHESIS\"; "
+      ],
+      [
+        "\\)",
+        " return \"CLOSE_PARENTHESIS\"; "
+      ],
+      [
+        "==",
+        " return \"EQ\"; "
+      ],
+      [
+        "=",
+        " return \"EQUAL\"; "
+      ],
+      [
+        "\\|\\|",
+        " return \"OR\"; "
+      ],
+      [
+        "&&",
+        " return \"AND\"; "
+      ],
+      [
+        "\\*",
+        " return \"TIMES\"; "
+      ],
+      [
+        "\\/",
+        " return \"DIVIDED\"; "
+      ],
+      [
+        "!=",
+        " return \"NOT_EQUAL\"; "
+      ],
+      [
+        "<=",
+        " return \"LESS_OR_EQ_THAN\"; "
+      ],
+      [
+        ">=",
+        " return \"GREATER_OR_EQ_THAN\"; "
+      ],
+      [
+        "<",
+        " return \"LESS_THAN\"; "
+      ],
+      [
+        ">",
+        " return \"GREATER_THAN\"; "
+      ],
+      [
+        "(true|false)",
+        " return \"BOOLEAN_VALUE\"; "
+      ],
+      [
+        "\\+",
+        " return \"PLUS\"; "
+      ],
+      [
+        "-",
+        " return \"MINUS\"; "
+      ],
+      [
+        "[+-]?[0-9]+\\.[0-9]+",
+        " return \"DOUBLE_VALUE\"; "
+      ],
+      [
+        "[+-]?[0-9]+",
+        " return \"INT_VALUE\"; "
+      ],
+      [
+        "\"[^\\\"]*\"",
+        " return \"STRING_VALUE\"; "
+      ],
+      [
+        "'.'",
+        " return \"CHAR_VALUE\"; "
+      ],
+      [
+        "[a-zA-z]\\w*",
+        " return \"ID\"; "
+      ],
+      [
+        "\\n",
+        "yy.mylineno++;"
+      ],
+      [
+        "(\\t|\\s)",
+        ""
+      ],
+      [
+        ".",
+        "throw new Error(\"Unsupported symbols on line \" + yy.mylineno); "
+      ]
+    ],
+    "actionInclude": "\r\n    if (!yy.isReady) {\r\n        yy.isReady = true;\r\n        yy.mylineno = 1;\r\n        const { quadruple } = yy.data;\r\n        yy.quadruple = quadruple;\r\n    }\r\n"
+  },
+  "start": "baky",
+  "bnf": {
+    "createProgram": [
+      [
+        "",
+        "\r\n    yy.quadruple.semantics.globalName = $1;\r\n    yy.quadruple.semantics.createFunction($1, yy.mylineno, 0);\r\n"
+      ]
+    ],
+    "fillGlobalMemory": [
+      [
+        "",
+        "\r\n    const resources = yy.quadruple.semantics.functionsTable[$-2].resources;\r\n    yy.quadruple.semantics.memory.fillGlobalMemory(resources);\r\n"
+      ]
+    ],
+    "createFunction": [
+      [
+        "",
+        "\r\n    if($0 == \"void\") yy.quadruple.semantics.currentType = \"VOID\";\r\n    const quadLength = yy.quadruple.quadruples.length;\r\n    yy.quadruple.semantics.createFunction($1, yy.mylineno, quadLength);\r\n"
+      ]
+    ],
+    "validateFunction": [
+      [
+        "",
+        "\r\n    yy.quadruple.semantics.validateFunction($0, yy.mylineno);\r\n"
+      ]
+    ],
+    "validateParams": [
+      [
+        "",
+        "\r\n    yy.quadruple.semantics.validateParams(yy.mylineno);\r\n    yy.quadruple.createFunctionJump();\r\n"
+      ]
+    ],
+    "createParam": [
+      [
+        "",
+        "\r\n    yy.quadruple.createParam(yy.mylineno);\r\n"
+      ]
+    ],
+    "popScope": [
+      [
+        "",
+        "\r\n    let currentScope = yy.quadruple.semantics.scopeStack.pop();\r\n    if(currentScope != \"Baky\") {\r\n        yy.quadruple.returnFromFunction(currentScope);\r\n    }\r\n    yy.quadruple.semantics.functionsTable[currentScope].variablesTable = {};\r\n"
+      ]
+    ],
+    "returnError": [
+      [
+        "",
+        "\r\n    let currentScopeF = yy.quadruple.semantics.scopeStack.peek();\r\n    yy.quadruple.quadruples.push([\"returnError\", currentScopeF, null, null]);\r\n"
+      ]
+    ],
+    "createVariable": [
+      [
+        "",
+        "\r\n    yy.quadruple.semantics.createVariable($1, yy.mylineno);\r\n"
+      ]
+    ],
+    "createParameter": [
+      [
+        "",
+        "\r\n    yy.quadruple.semantics.createParameter($1, yy.mylineno);\r\n"
+      ]
+    ],
+    "createVariableArray": [
+      [
+        "",
+        "\r\n    yy.quadruple.semantics.createVariableArray($-2, yy.mylineno, \"ARRAY\", [$0]);\r\n"
+      ]
+    ],
+    "createVariableMatrix": [
+      [
+        "",
+        "\r\n    yy.quadruple.semantics.createVariableArray($-5, yy.mylineno, \"MATRIX\", [$-3, $0]);\r\n"
+      ]
+    ],
+    "processFor": [
+      [
+        "",
+        "\r\n    yy.quadruple.processFor(yy.mylineno);\r\n"
+      ]
+    ],
+    "endFor": [
+      [
+        "",
+        "\r\n    yy.quadruple.endFor();\r\n"
+      ]
+    ],
+    "validateVariable": [
+      [
+        "",
+        "\r\n    let typeV = yy.quadruple.semantics.validateVariable($1, yy.mylineno, \"\");\r\n    yy.quadruple.operands.push(typeV.address);\r\n    yy.quadruple.types.push(typeV.type);\r\n"
+      ]
+    ],
+    "validateArray": [
+      [
+        "",
+        "\r\n    let typeA = yy.quadruple.semantics.validateVariable($-4, yy.mylineno, \"ARRAY\");\r\n    let addArray = yy.quadruple.processArray(typeA);\r\n    yy.quadruple.operands.push(addArray);\r\n    yy.quadruple.types.push(typeA.type);\r\n"
+      ]
+    ],
+    "validateMatrix": [
+      [
+        "",
+        "\r\n    let typeM = yy.quadruple.semantics.validateVariable($-9, yy.mylineno, \"MATRIX\");\r\n    let addMatrix = yy.quadruple.processMatrix(typeM);\r\n    yy.quadruple.operands.push(addMatrix);\r\n    yy.quadruple.types.push(typeM.type);\r\n"
+      ]
+    ],
+    "pushOperator": [
+      [
+        "",
+        "\r\n    yy.quadruple.operators.push($1);\r\n"
+      ]
+    ],
+    "processOperatorN1": [
+      [
+        "",
+        "\r\n    let operatorN1 = yy.quadruple.operators.peek();\r\n    while(operatorN1 == '*' || operatorN1 == '/') {\r\n        yy.quadruple.processOperator(operatorN1, yy.mylineno);\r\n        operatorN1 = yy.quadruple.operators.peek();\r\n    }\r\n"
+      ]
+    ],
+    "processOperatorN2": [
+      [
+        "",
+        "\r\n    let operatorN2 = yy.quadruple.operators.peek();\r\n    while(operatorN2 == '+' || operatorN2 == '-') {\r\n        yy.quadruple.processOperator(operatorN2, yy.mylineno);\r\n        operatorN2 = yy.quadruple.operators.peek();\r\n    }\r\n"
+      ]
+    ],
+    "processOperatorN3": [
+      [
+        "",
+        "\r\n    let operatorN3 = yy.quadruple.operators.peek();\r\n    while(operatorN3 == '==' || operatorN3 == '!=' || operatorN3 == '<' || operatorN3 == '<=' || operatorN3 == '>' || operatorN3 == '>=') {\r\n        yy.quadruple.processOperator(operatorN3, yy.mylineno);\r\n        operatorN3 = yy.quadruple.operators.peek();\r\n    }\r\n"
+      ]
+    ],
+    "processOperatorN4": [
+      [
+        "",
+        "\r\n    let operatorN4 = yy.quadruple.operators.peek();\r\n    while(operatorN4 == '&&') {\r\n        yy.quadruple.processOperator(operatorN4, yy.mylineno);\r\n        operatorN4 = yy.quadruple.operators.peek();\r\n    }\r\n"
+      ]
+    ],
+    "processOperatorN5": [
+      [
+        "",
+        "\r\n    let operatorN5 = yy.quadruple.operators.peek();\r\n    while(operatorN5 == '||') {\r\n        yy.quadruple.processOperator(operatorN5, yy.mylineno);\r\n        operatorN5 = yy.quadruple.operators.peek();\r\n    }\r\n"
+      ]
+    ],
+    "processAssign": [
+      [
+        "",
+        "\r\n    let operatorAssign = yy.quadruple.operators.peek();\r\n    yy.quadruple.processAssign(operatorAssign, yy.mylineno);\r\n"
+      ]
+    ],
+    "processWrite": [
+      [
+        "",
+        "\r\n    yy.quadruple.processWrite(yy.mylineno);\r\n"
+      ]
+    ],
+    "processRead": [
+      [
+        "",
+        "\r\n    yy.quadruple.processRead();\r\n"
+      ]
+    ],
+    "pushBottom": [
+      [
+        "",
+        "\r\n    yy.quadruple.operators.push($1);\r\n"
+      ]
+    ],
+    "popBottom": [
+      [
+        "",
+        "\r\n    yy.quadruple.operators.pop();\r\n"
+      ]
+    ],
+    "processIf": [
+      [
+        "",
+        "\r\n    yy.quadruple.processIf(yy.mylineno);\r\n"
+      ]
+    ],
+    "processElse": [
+      [
+        "",
+        "\r\n    yy.quadruple.processElse();\r\n"
+      ]
+    ],
+    "returnIf": [
+      [
+        "",
+        "\r\n    yy.quadruple.returnIf();\r\n"
+      ]
+    ],
+    "storeWhile": [
+      [
+        "",
+        "\r\n    yy.quadruple.storeWhile();\r\n"
+      ]
+    ],
+    "returnWhile": [
+      [
+        "",
+        "\r\n    yy.quadruple.returnWhile();\r\n"
+      ]
+    ],
+    "handleReturn": [
+      [
+        "",
+        "\r\n    yy.quadruple.handleReturn(yy.mylineno);\r\n"
+      ]
+    ],
+    "baky": [
+      [
+        "BAKY ID createProgram SEMICOLON vars fillGlobalMemory funcs main",
+        "\r\n        // for(let i = 0; i < yy.quadruple.quadruples.length; i++) {\r\n        //     console.log(i + \" : \" + yy.quadruple.quadruples[i]);\r\n        // }\r\n        // console.log(JSON.stringify(yy.quadruple.semantics.functionsTable, null, 4));\r\n        // console.log(yy.quadruple.semantics.memory.virtualMemory);\r\n        console.log(`Successful compilation of program ${yy.quadruple.semantics.globalName}`);\r\n    "
+      ]
+    ],
+    "vars": [
+      "",
+      "vars_aux vars"
+    ],
+    "vars_aux": [
+      "VAR type vars_aux2 SEMICOLON"
+    ],
+    "vars_aux2": [
+      "ID createVariable",
+      "ID createVariable COMA vars_aux2",
+      "ID OPEN_SQUARE_BRACKET INT_VALUE CLOSE_SQUARE_BRACKET createVariableArray",
+      "ID OPEN_SQUARE_BRACKET INT_VALUE CLOSE_SQUARE_BRACKET createVariableArray COMA vars_aux2",
+      "ID OPEN_SQUARE_BRACKET INT_VALUE CLOSE_SQUARE_BRACKET OPEN_SQUARE_BRACKET INT_VALUE CLOSE_SQUARE_BRACKET createVariableMatrix",
+      "ID OPEN_SQUARE_BRACKET INT_VALUE CLOSE_SQUARE_BRACKET OPEN_SQUARE_BRACKET INT_VALUE CLOSE_SQUARE_BRACKET createVariableMatrix COMA vars_aux2"
+    ],
+    "funcs": [
+      "",
+      "function funcs"
+    ],
+    "main": [
+      "VOID BAKY createFunction OPEN_PARENTHESIS CLOSE_PARENTHESIS vars block popScope"
+    ],
+    "type": [
+      [
+        "INT",
+        "yy.quadruple.semantics.currentType = \"INT\";"
+      ],
+      [
+        "DOUBLE",
+        "yy.quadruple.semantics.currentType = \"DOUBLE\";"
+      ],
+      [
+        "CHAR",
+        "yy.quadruple.semantics.currentType = \"CHAR\";"
+      ],
+      [
+        "STRING",
+        "yy.quadruple.semantics.currentType = \"STRING\";"
+      ],
+      [
+        "BOOLEAN",
+        "yy.quadruple.semantics.currentType = \"BOOLEAN\";"
+      ]
+    ],
+    "function": [
+      "FUNCTION type ID createFunction OPEN_PARENTHESIS params CLOSE_PARENTHESIS vars block returnError popScope",
+      "FUNCTION VOID ID createFunction OPEN_PARENTHESIS params CLOSE_PARENTHESIS vars block popScope"
+    ],
+    "block": [
+      "OPEN_CURLY_BRACKET block_aux CLOSE_CURLY_BRACKET"
+    ],
+    "block_aux": [
+      "",
+      "statute block_aux"
+    ],
+    "params": [
+      "",
+      "params_aux"
+    ],
+    "params_aux": [
+      "type ID createParameter",
+      "type ID createParameter COMA params_aux"
+    ],
+    "statute": [
+      "call SEMICOLON",
+      "return",
+      "read",
+      "write",
+      "if",
+      "assign",
+      "while",
+      "for"
+    ],
+    "call": [
+      "ID OPEN_PARENTHESIS validateFunction pushBottom CLOSE_PARENTHESIS popBottom validateParams",
+      "ID OPEN_PARENTHESIS validateFunction pushBottom call_aux CLOSE_PARENTHESIS popBottom validateParams"
+    ],
+    "call_aux": [
+      "exp createParam",
+      "exp createParam COMA call_aux"
+    ],
+    "return": [
+      "RETURN exp handleReturn SEMICOLON"
+    ],
+    "read": [
+      "READ OPEN_PARENTHESIS read_aux CLOSE_PARENTHESIS SEMICOLON"
+    ],
+    "read_aux": [
+      "var processRead",
+      "var processRead COMA read_aux"
+    ],
+    "write": [
+      "WRITE OPEN_PARENTHESIS write_aux CLOSE_PARENTHESIS SEMICOLON"
+    ],
+    "write_aux": [
+      "exp processWrite",
+      "exp processWrite COMA write_aux"
+    ],
+    "assign": [
+      "var EQUAL pushOperator exp processAssign SEMICOLON"
+    ],
+    "if": [
+      "IF OPEN_PARENTHESIS exp CLOSE_PARENTHESIS processIf block returnIf",
+      "IF OPEN_PARENTHESIS exp CLOSE_PARENTHESIS processIf block ELSE processElse block returnIf"
+    ],
+    "while": [
+      "WHILE storeWhile OPEN_PARENTHESIS exp CLOSE_PARENTHESIS processIf block returnWhile"
+    ],
+    "for": [
+      "FROM var TO exp processFor DO block endFor"
+    ],
+    "exp": [
+      "superexp processOperatorN5",
+      "superexp processOperatorN5 OR pushOperator exp"
+    ],
+    "var": [
+      "ID validateVariable",
+      "ID OPEN_SQUARE_BRACKET pushBottom exp CLOSE_SQUARE_BRACKET popBottom validateArray",
+      "ID OPEN_SQUARE_BRACKET pushBottom exp CLOSE_SQUARE_BRACKET popBottom OPEN_SQUARE_BRACKET pushBottom exp CLOSE_SQUARE_BRACKET popBottom validateMatrix"
+    ],
+    "superexp": [
+      "megaexp processOperatorN4",
+      "megaexp processOperatorN4 AND pushOperator superexp"
+    ],
+    "megaexp": [
+      "hiperexp processOperatorN3",
+      "hiperexp comp hiperexp processOperatorN3"
+    ],
+    "hiperexp": [
+      "term processOperatorN2",
+      "term processOperatorN2 PLUS pushOperator hiperexp",
+      "term processOperatorN2 MINUS pushOperator hiperexp"
+    ],
+    "comp": [
+      "LESS_THAN pushOperator",
+      "GREATER_THAN pushOperator",
+      "EQ pushOperator",
+      "NOT_EQUAL pushOperator",
+      "GREATER_OR_EQ_THAN pushOperator",
+      "LESS_OR_EQ_THAN pushOperator"
+    ],
+    "term": [
+      "factor processOperatorN1",
+      "factor processOperatorN1 TIMES pushOperator term",
+      "factor processOperatorN1 DIVIDED pushOperator term"
+    ],
+    "factor": [
+      "OPEN_PARENTHESIS pushBottom exp CLOSE_PARENTHESIS popBottom",
+      "var",
+      "call",
+      [
+        "INT_VALUE",
+        "yy.quadruple.processConstant(parseInt($1),\"INT\");"
+      ],
+      [
+        "DOUBLE_VALUE",
+        "yy.quadruple.processConstant(parseFloat($1),\"DOUBLE\");"
+      ],
+      [
+        "CHAR_VALUE",
+        "yy.quadruple.processConstant($1.charAt(1),\"CHAR\");"
+      ],
+      [
+        "STRING_VALUE",
+        "yy.quadruple.processConstant($1.slice(1,-1),\"STRING\");"
+      ],
+      [
+        "BOOLEAN_VALUE",
+        "yy.quadruple.processConstant($1 == \"true\" ?  true :  false,\"BOOLEAN\");"
+      ]
+    ]
+  }
+}
