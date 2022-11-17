@@ -59,8 +59,8 @@
 (true|false) { return "BOOLEAN_VALUE"; }
 "+" { return "PLUS"; }
 "-" { return "MINUS"; }
-[+-]?[0-9]+\.[0-9]+ { return "DOUBLE_VALUE"; }
-[+-]?[0-9]+ { return "INT_VALUE"; }
+[0-9]+\.[0-9]+ { return "DOUBLE_VALUE"; }
+[0-9]+ { return "INT_VALUE"; }
 \"[^\"]*\" { return "STRING_VALUE"; }
 \'.\' { return "CHAR_VALUE"; }
 [a-zA-z]\w* { return "ID"; }
@@ -69,6 +69,10 @@
 . {throw new Error("Unsupported symbols on line " + yy.mylineno); }
 
 /lex
+
+%left PLUS MINUS
+%left TIMES DIVIDED
+%left UMINUS
 
 %start baky
 
@@ -395,7 +399,9 @@ factor:
     var |
     call |
     INT_VALUE {yy.quadruple.processConstant(parseInt($1),"INT");} |
+    MINUS INT_VALUE %prec UMINUS {yy.quadruple.processConstant(parseInt($2)*-1,"INT");} |
     DOUBLE_VALUE {yy.quadruple.processConstant(parseFloat($1),"DOUBLE");} |
+    MINUS DOUBLE_VALUE {yy.quadruple.processConstant(parseInt($2)*-1,"DOUBLE");} |
     CHAR_VALUE {yy.quadruple.processConstant($1.charAt(1),"CHAR");} |
     STRING_VALUE {yy.quadruple.processConstant($1.slice(1,-1),"STRING");} |
     BOOLEAN_VALUE {yy.quadruple.processConstant($1 == "true" ?  true :  false,"BOOLEAN");} ;
