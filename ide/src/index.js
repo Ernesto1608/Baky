@@ -37,7 +37,7 @@ const Quadruple = require('./quadruple.js');
 const VM = require('./vm.js');
 const grammar = require('./grammar');
 
-function runCompiler(code) {
+function runCompiler(code, addLog, getInput) {
     if(code) {
         const parser = new Parser(grammar, { debug: false });
         const quadruple = new Quadruple();
@@ -47,7 +47,7 @@ function runCompiler(code) {
         console.log(code);
         parser.parse(code);
         
-        const vm = new VM(quadruple);
+        const vm = new VM(quadruple, addLog, getInput);
         vm.run();
     }
 }

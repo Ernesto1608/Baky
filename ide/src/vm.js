@@ -1,24 +1,12 @@
-//const readline = require("readline");
 const { Stack } = require("datastructures-js");
 
-
-// function askInput() {
-//     const rl = readline.createInterface({
-//         input: process.stdin,
-//         output: process.stdout,
-//     });
-
-//     return new Promise(resolve => rl.question("(input) ", ans => {
-//         rl.close();
-//         resolve(ans);
-//     }))
-// }
-
 class VM {
-    constructor(quadruple) {
+    constructor(quadruple, addLog, getInput) {
         this.quadruple = quadruple;
         this.functionsSize = {};
         this.returns = new Stack();
+        this.addLog = addLog;
+        this.getInput = getInput;
     }
 
     async run() {
@@ -98,12 +86,12 @@ class VM {
                     break;
                 case 'write':
                     value = memory.getValueFromAddress(quads[i][1]);
-                    console.log("(BAKY) " + value);
+                    this.addLog("(BAKY) " + value);
                     break;
                 case 'read':
                     type = memory.getTypeFromAddress(quads[i][1]);
                     let error = false;
-                    value = ""//await askInput();
+                    value = await this.getInput();
                     switch (type) { 
                         case 0:
                             if(value.match("[+-]?[0-9]+")){
@@ -127,7 +115,9 @@ class VM {
                             break;
                     }
                     if (error) {
-                        throw new Error(`Unable to cast ${value} to type ${type == 0 ? "INT" : type == 1 ? "DOUBLE" : type == 3 ? "CHAR" : "BOOLEAN"}`);
+                        this.addLog(`(Error) Unable to cast ${value} to type ${type == 0 ? "INT" : type == 1 ? "DOUBLE" : type == 3 ? "CHAR" : "BOOLEAN"}`);
+                        i = quads.length;
+                        break;
                     }
                     memory.assignToAddress(quads[i][1], value);
                     break;
@@ -154,11 +144,13 @@ class VM {
                 case 'ver':
                     value = memory.getValueFromAddress(quads[i][1]);
                     if(value < quads[i][2] || value >= quads[i][3]) {
-                        throw new Error(`Value '${value}' out of bounds for array`);
+                        this.addLog(`(Error) Value '${value}' out of bounds for array`);
+                        i = quads.length;
                     }
                     break;
                 case 'returnError':
-                    throw new Error(`Expecting valid return on function '${quads[i][1]}'`);
+                    this.addLog(`(Error) Expecting valid return on function '${quads[i][1]}'`);
+                    i = quads.length;
                     break;
             }
         }

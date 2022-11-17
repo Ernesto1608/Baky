@@ -1,51 +1,54 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-//import CodeEditor, { CodeEditorSyntaxStyles } from '@rivascva/react-native-code-editor';
-import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboard } from '@react-native-community/hooks';
-import { Button, ScrollView, Text, TextInput, View } from 'react-native';
-//import TextAreaWithLineNumber from 'text-area-with-line-number';
+import { Button, ScrollView, TextInput, View, Modal } from 'react-native';
 import { runCompiler } from './src';
-//const { readFile } = require("react-native-fs");
-//import nodejs from 'nodejs-mobile-react-native';
-//import * as RNFS from 'react-native-fs';
-//const baky = require("./baky");
-// import { parser } from './metro.config';
-// const Quadruple = require('./src/quadruple');
-//const { Parser } = require('jison');
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 
-//import { WebView } from 'react-native-webview';
+const Tab = createMaterialTopTabNavigator();
+let resolver;
 
 export default function App() {
   return (
     <SafeAreaProvider>
-        <CodeBlock/>
+      <Navigation/>
     </SafeAreaProvider>
   );
 }
 
-function CodeBlock() {
+function Navigation() {
+  const insets = useSafeAreaInsets();
+  const [logs, setLogs] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  return (
+    <View style={{flex: 1, paddingTop: insets.top}}>
+      <NavigationContainer>
+        <Tab.Navigator>
+          <Tab.Screen name="Code" children={() =>
+            <CodeBlock logs={logs} setLogs={setLogs} setModalVisible={setModalVisible} />
+          } />
+          <Tab.Screen name="Console" children={() =>
+            <Console logs={logs} setLogs={setLogs} modalVisible={modalVisible} setModalVisible={setModalVisible} />
+          } />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </View>
+  );
+}
+
+function CodeBlock({logs, setLogs, setModalVisible}) {
   const keyboard = useKeyboard();
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
 
   const [height, setHeight] = useState(0);
   const [usedLines, setUsedLines] = useState(0);
   const [linesText, setLinesText] = useState("");
 
   const [code, setCode] = useState("");
-
-  let webview;
-
-  // useEffect( () => {
-  //   nodejs.start('main.js');
-  //   nodejs.channel.addListener(
-  //     'message',
-  //     (msg) => {
-  //       alert('From node: ' + msg);
-  //     },
-  //     this 
-  //   );
-  // }, []);
 
   function _onLayout(e) {
     // the height increased therefore we also increase the usedLine counter
@@ -65,96 +68,104 @@ function CodeBlock() {
     }
   }
 
-  function run() {
-    // const quadruple = new Quadruple();
-    // parser.yy.data = {
-    //     quadruple
-    // };
-    // parser.parse('fs.readFileSync(, "utf-8")');
-    runCompiler(code);
+  function getInput() {
+    setModalVisible(true);
+    return new Promise((res) => {
+      resolver = res;
+    });
   }
 
-  const runFirst = `
-      try{
-        //import { runCompiler } from './src/index.js';
+  function addLog(log) {
+    console.log(log);
+    console.log(logs);
+    setLogs(logs => [...logs, log]);
+  }
 
-        var corescript = document.createElement('script');
-        corescript.type = 'text/javascript';
-        corescript.src = "./src/index.js";
-        var parent = document.getElementsByTagName('head').item(0);
-        parent.appendChild(corescript);
-        void(0);
+  function run() {
+    try {
+      runCompiler(code, addLog, getInput);
+      navigation.navigate('Console');
+    } catch (err) {
+      addLog(err);
+      navigation.navigate('Console');
+    }
+  }
 
+  useEffect(() => {
+    console.log(logs);
+  }, [logs])
 
-        
-
-        console.log(document);
-        //alert("sup");
-        
-        //runCompiler();
-        console.log("hola");
-      } catch(e) {
-        alert(e);
-      }
-    `;
-
-  const runBeforeFirst = `
-      window.isNativeApp = true;
-      true; // note: this is required, or you'll sometimes get silent failures
-
-      console = new Object();
-      console.log = function(log) {
-        window.ReactNativeWebView.postMessage(log);
-      };
-      console.debug = console.log;
-      console.info = console.log;
-      console.warn = console.log;
-      console.error = console.log;
-
-  `;
-
-  const customHTML = `
-  <html>
-    <head></head><body><script type="text/javascript" src="./src/index.js"></script></body>
-  </html>
-  `
 
   return(
-    <SafeAreaView>
-      {/* <WebView 
-          ref={ref => (webview = ref)}
-          source={{ html: customHTML }} 
-          onMessage={(event) => { console.log(event) }}
-          onLoad={() => {webview.injectJavaScript(runFirst)}}
-          injectedJavaScriptBeforeContentLoaded={runBeforeFirst}
-        /> */}
-      <View style={{height: '100%', display: 'flex', flexDirection: "column", backgroundColor: 'red'}}>
-        <ScrollView style={{...{height: '100%', backgroundColor: 'blue', flexGrow: 1}, ...(keyboard.keyboardShown
-                  ? { marginBottom: insets.bottom }
-                  : {}),}} 
-                  contentContainerStyle={{ flexGrow: 1 }}>
-          <View style={{flexGrow: 1, display: 'flex', flexDirection: "row", width: '100%'}}>
-            <TextInput
-              style={{backgroundColor: 'red', textAlignVertical: 'top', color: 'white', textAlignHorizontal: 'center'}}
+    <View style={{height: '100%', display: 'flex', flexDirection: "column", backgroundColor: 'red'}}>
+      <ScrollView style={{...{height: '100%', backgroundColor: 'blue', flexGrow: 1}, ...(keyboard.keyboardShown
+                ? { marginBottom: insets.bottom }
+                : {}),}} 
+                contentContainerStyle={{ flexGrow: 1 }}>
+        <View style={{flexGrow: 1, display: 'flex', flexDirection: "row", width: '100%'}}>
+          <TextInput
+            style={{backgroundColor: 'red', textAlignVertical: 'top', color: 'white', textAlignHorizontal: 'center'}}
+            multiline
+            editable={false}
+            autoCapitalize='none'
+            autoCorrect={false}
+            value={linesText}
+          />
+          <TextInput
+            style={{flexGrow: 1, backgroundColor: 'black', textAlignVertical: 'top', color: 'white'}}
+            multiline
+            autoCapitalize='none'
+            autoCorrect={false}
+            onContentSizeChange={(e)=> _onLayout(e)}
+            value={code}
+            onChangeText={(e) => setCode(e)}
+          />
+        </View>
+      </ScrollView>
+      <Button title='Run' onPress={() => {run()}}/>
+    </View>
+  )
+}
+
+function Console({logs, setLogs, modalVisible, setModalVisible}) {
+  const [input, setInput] = useState("");
+
+  return (
+    <View style={{height: '100%', width: '100%', display: 'flex'}}>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <View style={{borderRadius: 10, padding: 35, backgroundColor: 'white'}}>
+            <TextInput 
+              placeholder='input' 
               multiline
-              editable={false}
               autoCapitalize='none'
               autoCorrect={false}
-              value={linesText}
-            />
-            <TextInput
-              style={{flexGrow: 1, backgroundColor: 'black', textAlignVertical: 'top', color: 'white'}}
-              multiline
-              autoCapitalize='none'
-              autoCorrect={false}
-              onContentSizeChange={(e)=> _onLayout(e)}
-              value={code}
-              onChangeText={(e) => setCode(e)}
-            />
+              value={input}
+              onChangeText={(e) => setInput(e)}
+              style={{borderWidth: 1, padding: 10, minHeight: 40, maxHeight: 250, width: 250, marginBottom: 20}}/>
+            <Button title='Submit' onPress={() => {resolver(input); setModalVisible(false); setInput("");}}/>
           </View>
-        </ScrollView>
-        <Button title='Run' onPress={() => {run()}}/>
-      </View>
-    </SafeAreaView>
+        </View>
+      </Modal>
+
+      <TextInput
+          style={{flexGrow: 1, backgroundColor: 'black', textAlignVertical: 'top', color: 'white'}}
+          multiline
+          editable={false}
+          autoCapitalize='none'
+          autoCorrect={false}
+          value={logs.join('\n')}
+        />
+      <Button title='Clear' onPress={() => {setLogs([])}}/>
+    </View>
   )
 }
