@@ -50,8 +50,7 @@ class Quadruple {
         this.operators.pop();
     }
 
-    processArray(variable) {
-        //TODO mandar line
+    processArray(variable, line) {
         const [rightO] = [this.operands.pop()];
         const [rightT] = [this.types.pop()];
         if(rightT != "INT") throw new Error(`Array index must be int on line ${line}`);

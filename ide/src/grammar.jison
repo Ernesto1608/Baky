@@ -153,7 +153,7 @@
 
 @validateArray: {
     let typeA = yy.quadruple.semantics.validateVariable($-4, yy.mylineno, "ARRAY");
-    let addArray = yy.quadruple.processArray(typeA);
+    let addArray = yy.quadruple.processArray(typeA, yy.mylineno);
     yy.quadruple.operands.push(addArray);
     yy.quadruple.types.push(typeA.type);
 };

@@ -311,7 +311,7 @@ const grammar = {
     "validateArray": [
       [
         "",
-        "\r\n    let typeA = yy.quadruple.semantics.validateVariable($-4, yy.mylineno, \"ARRAY\");\r\n    let addArray = yy.quadruple.processArray(typeA);\r\n    yy.quadruple.operands.push(addArray);\r\n    yy.quadruple.types.push(typeA.type);\r\n"
+        "\r\n    let typeA = yy.quadruple.semantics.validateVariable($-4, yy.mylineno, \"ARRAY\");\r\n    let addArray = yy.quadruple.processArray(typeA, yy.mylineno);\r\n    yy.quadruple.operands.push(addArray);\r\n    yy.quadruple.types.push(typeA.type);\r\n"
       ]
     ],
     "validateMatrix": [
