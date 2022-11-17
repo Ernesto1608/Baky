@@ -17,6 +17,7 @@ function void r(){
 void Baky()
 var int m[10][2],i,j;
 {
+    write(1 + -2 <= -1);
     from i to 10 do {
         from j to 2 do {
             m[i][j] = i+j;

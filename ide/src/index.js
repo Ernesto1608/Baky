@@ -32,7 +32,6 @@
 // module.exports = { runCompiler, fs };
 
 const { Parser } = require("jison");
-const path = require("path");
 const Quadruple = require('./quadruple.js');
 const VM = require('./vm.js');
 const grammar = require('./grammar');

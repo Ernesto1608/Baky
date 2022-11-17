@@ -102,6 +102,7 @@ class VM {
                     break;
                 case 'read':
                     type = memory.getTypeFromAddress(quads[i][1]);
+                    if(type == 10) type = memory.getTypeFromAddress(memory.getValueFromPointer(quads[i][1]));
                     let error = false;
                     value = await askInput();
                     switch (type) { 
