@@ -166,11 +166,11 @@
         " return \"MINUS\"; "
       ],
       [
-        "[+-]?[0-9]+\\.[0-9]+",
+        "[0-9]+\\.[0-9]+",
         " return \"DOUBLE_VALUE\"; "
       ],
       [
-        "[+-]?[0-9]+",
+        "[0-9]+",
         " return \"INT_VALUE\"; "
       ],
       [
@@ -200,6 +200,22 @@
     ],
     "actionInclude": "\r\n    if (!yy.isReady) {\r\n        yy.isReady = true;\r\n        yy.mylineno = 1;\r\n        const { quadruple } = yy.data;\r\n        yy.quadruple = quadruple;\r\n    }\r\n"
   },
+  "operators": [
+    [
+      "left",
+      "PLUS",
+      "MINUS"
+    ],
+    [
+      "left",
+      "TIMES",
+      "DIVIDED"
+    ],
+    [
+      "left",
+      "UMINUS"
+    ]
+  ],
   "start": "baky",
   "bnf": {
     "createProgram": [
@@ -567,8 +583,19 @@
         "yy.quadruple.processConstant(parseInt($1),\"INT\");"
       ],
       [
+        "MINUS INT_VALUE",
+        "yy.quadruple.processConstant(parseInt($2)*-1,\"INT\");",
+        {
+          "prec": "UMINUS"
+        }
+      ],
+      [
         "DOUBLE_VALUE",
         "yy.quadruple.processConstant(parseFloat($1),\"DOUBLE\");"
+      ],
+      [
+        "MINUS DOUBLE_VALUE",
+        "yy.quadruple.processConstant(parseInt($2)*-1,\"DOUBLE\");"
       ],
       [
         "CHAR_VALUE",

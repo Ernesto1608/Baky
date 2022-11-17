@@ -97,8 +97,8 @@ function CodeBlock({logs, setLogs, setModalVisible}) {
 
 
   return(
-    <View style={{height: '100%', display: 'flex', flexDirection: "column", backgroundColor: 'red'}}>
-      <ScrollView style={{...{height: '100%', backgroundColor: 'blue', flexGrow: 1}, ...(keyboard.keyboardShown
+    <View style={{height: '100%', display: 'flex', flexDirection: "column"}}>
+      <ScrollView style={{...{height: '100%', flexGrow: 1}, ...(keyboard.keyboardShown
                 ? { marginBottom: insets.bottom }
                 : {}),}} 
                 contentContainerStyle={{ flexGrow: 1 }}>
@@ -128,11 +128,12 @@ function CodeBlock({logs, setLogs, setModalVisible}) {
 }
 
 function Console({logs, setLogs, modalVisible, setModalVisible}) {
+  const keyboard = useKeyboard();
+  const insets = useSafeAreaInsets();
   const [input, setInput] = useState("");
 
   return (
     <View style={{height: '100%', width: '100%', display: 'flex'}}>
-
       <Modal
         animationType="slide"
         transparent={true}
@@ -156,15 +157,19 @@ function Console({logs, setLogs, modalVisible, setModalVisible}) {
           </View>
         </View>
       </Modal>
-
-      <TextInput
-          style={{flexGrow: 1, backgroundColor: 'black', textAlignVertical: 'top', color: 'white'}}
-          multiline
-          editable={false}
-          autoCapitalize='none'
-          autoCorrect={false}
-          value={logs.join('\n')}
-        />
+      <ScrollView style={{...{height: '100%', flexGrow: 1}, ...(keyboard.keyboardShown
+                ? { marginBottom: insets.bottom }
+                : {}),}} 
+                contentContainerStyle={{ flexGrow: 1 }}>
+        <TextInput
+            style={{flexGrow: 1, backgroundColor: 'black', textAlignVertical: 'top', color: 'white'}}
+            multiline
+            editable={false}
+            autoCapitalize='none'
+            autoCorrect={false}
+            value={logs.join('\n')}
+          />
+      </ScrollView>
       <Button title='Clear' onPress={() => {setLogs([])}}/>
     </View>
   )
