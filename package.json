@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "datastructures-js": "^12.0.0",
-    "jison": "^0.4.18"
+    "jison": "^0.4.18",
+    "prompt": "^1.3.0"
   }
 }
