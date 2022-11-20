@@ -22,33 +22,33 @@ var int i,j;
 function void printM()
 var int i,j;
 {
-    write("A:");
+    write("A: endl");
     from i to n do{
-        write("[");
+        write("[ ");
         from j to k do {
-            write(a[i][j]);
+            write(a[i][j], " , ");
         }
-        write("]");
+        write("] endl");
         j=0;
     }
     i=0;
-    write("B:");
+    write("B: endl");
     from i to k do{
-        write("[");
+        write("[ ");
         from j to m do {
-            write(b[i][j]);
+            write(b[i][j], " , ");
         }
-        write("]");
+        write("] endl");
         j=0;
     }
     i=0;
-    write("C:");
+    write("C: endl");
     from i to n do{
-        write("[");
+        write("[ ");
         from j to m do {
-            write(c[i][j]);
+            write(c[i][j], " , ");
         }
-        write("]");
+        write("] endl");
         j=0;
     }
 }
@@ -71,7 +71,7 @@ var int i,j,l,num;
 }
 
 void Baky(){
-    write("Las dimensiones de las matrices serán N*K y K*M");
+    write("Las dimensiones de las matrices serán N*K y K*M endl");
     write("Ingresa N");
     read(n);
     write("Ingresa K");
