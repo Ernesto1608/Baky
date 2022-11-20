@@ -1,0 +1,84 @@
+Baky MulMatrix;
+var int a[18][18], b[18][18], c[18][18], n, k, m;
+
+function void generateM()
+var int i,j;
+{
+    from i to n do{
+        from j to k do {
+            a[i][j] = i*j*n;
+        }
+        j=0;
+    }
+    i=0;
+    from i to k do{
+        from j to m do {
+            b[i][j] = i*j*k;
+        }
+        j=0;
+    }
+}
+
+function void printM()
+var int i,j;
+{
+    write("A:");
+    from i to n do{
+        write("[");
+        from j to k do {
+            write(a[i][j]);
+        }
+        write("]");
+        j=0;
+    }
+    i=0;
+    write("B:");
+    from i to k do{
+        write("[");
+        from j to m do {
+            write(b[i][j]);
+        }
+        write("]");
+        j=0;
+    }
+    i=0;
+    write("C:");
+    from i to n do{
+        write("[");
+        from j to m do {
+            write(c[i][j]);
+        }
+        write("]");
+        j=0;
+    }
+}
+
+function void multiply()
+var int i,j,l,num;
+{
+    from i to n do {
+        j = 0;
+        from j to m do {
+            l = 0;
+            num = 0;
+            from l to k do {
+                num = num + a[i][l] * b[l][j];
+            }
+            c[i][j] = num;
+        }
+    }
+
+}
+
+void Baky(){
+    write("Las dimensiones de las matrices serán N*K y K*M");
+    write("Ingresa N");
+    read(n);
+    write("Ingresa K");
+    read(k);
+    write("Ingresa M");
+    read(m);
+    generateM();
+    multiply();
+    printM();
+}

@@ -1,0 +1,32 @@
+Baky Find;
+var int arr[10];
+
+function void readArray()
+var int i;
+{
+    from i to 10 do{
+        read(arr[i]);
+    }
+}
+
+function int findArray(int n)
+var int i;
+{
+    from i to 10 do {
+        if(arr[i] == n){
+            return i;
+        }
+    }
+    return -1;
+}
+
+void Baky()
+var int n;
+{
+    write("Llena el arreglo de 10 posiciones");
+    readArray();
+    write("Ingresa el número a buscar:");
+    read(n);
+    n = findArray(n);
+    write("El index del número es:", n);
+}

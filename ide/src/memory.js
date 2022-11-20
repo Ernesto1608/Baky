@@ -45,7 +45,7 @@ class Memory {
     getScopeFromAddress(address) {
         if(address >= 0 && address < 5000) return 0;
         if(address >= 5000 && address < 16000) return 1;
-        if(address >= 16000 && address < 20000) return 2;
+        if(address >= 16000 && address < 21000) return 2;
     }
 
     getTypeFromAddress(address) {
@@ -92,8 +92,9 @@ class Memory {
         let typeMem = type;
         if(temp) typeMem = 'T' + typeMem;
         let mem = this.allocation[scope][typeMem];
+        let out = (mem%1000 + size) > 1000 ? true : false;
         this.allocation[scope][typeMem]+=size;
-        if(this.allocation[scope][typeMem] % 1000 == 0) {
+        if(this.allocation[scope][typeMem] % 1000 == 0 || out) {
             throw new Error(`Out of memory for ${scope} of type ${typeMem}`);
         }
         return mem;

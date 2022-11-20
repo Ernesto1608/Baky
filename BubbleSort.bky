@@ -1,0 +1,49 @@
+Baky BubbleSort;
+var int arr[10];
+
+function void readArray()
+var int i;
+{
+    from i to 10 do{
+        read(arr[i]);
+    }
+}
+
+function void writeArray()
+var int i;
+{
+    write("El arreglo ordenado:");
+    from i to 10 do{
+        write(arr[i]);
+    }
+}
+
+function void bubbleSort()
+var int i,j,temp;
+var boolean s;
+{
+    s = true;
+    while(i<9 && s){
+        s = false;
+        j = 0;
+        while(j<9-i){
+            if (arr[j] > arr[j + 1]){
+                temp = arr[j];
+                arr[j] = arr[j+1];
+                arr[j+1] = temp;
+                s = true;
+            }
+            j = j+1;
+        }
+        i = i+1;
+    }
+}
+
+void Baky()
+var int n;
+{
+    write("Llena el arreglo de 10 posiciones");
+    readArray();
+    bubbleSort();
+    writeArray();
+}

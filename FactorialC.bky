@@ -1,0 +1,20 @@
+Baky FactorialC;
+
+function int factorial(int n)
+var int i,f;
+{
+    f = 1;
+    i = 1;
+    from i to n+1 do {
+        f = f*i;
+    }
+    return f;
+}
+
+void Baky()
+var int n;
+{
+    read(n);
+    n = factorial(n);
+    write(n);
+}

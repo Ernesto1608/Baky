@@ -1,0 +1,25 @@
+Baky FibonacciC;
+
+function int fibonacci(int n)
+var int i,j, temp;
+{
+    i = 1;
+    j = 1;
+    while(n>2){
+        temp = i;
+        i = j;
+        j = temp + j;
+        n = n-1;
+    }
+    return j;
+}
+
+void Baky()
+var int n;
+{
+    read(n);
+    n = fibonacci(n);
+    write(n);
+}
+
+// Serie de fib: 1 1 2 3 5 8 13 21 34 55 89 144 233

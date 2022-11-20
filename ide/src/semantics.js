@@ -121,6 +121,8 @@ class Semantics {
         let scopeMem = "local";
         if(currentScope == this.globalName) scopeMem = "global";
         const address = this.memory.assignMemory(scopeMem, this.currentType, false, 1);
+        const typeMem = this.memory.getTypeFromAddress(address);
+        this.functionsTable[currentScope].resources[typeMem]++;
         this.functionsTable[currentScope].variablesTable[id] = {
             type: this.currentType,
             address

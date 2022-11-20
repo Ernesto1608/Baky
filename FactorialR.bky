@@ -1,0 +1,14 @@
+Baky FactorialR;
+
+function int factorial(int n){
+    if(n <= 0) {return 1;}
+    return n * factorial(n-1);
+}
+
+void Baky()
+var int n;
+{
+    read(n);
+    n = factorial(n);
+    write(n);
+}
