@@ -256,6 +256,7 @@
 
 baky:
     BAKY ID @createProgram SEMICOLON vars @fillGlobalMemory funcs main {
+        yy.quadruple.quadruples.push(["end", null, null, null]);
         // for(let i = 0; i < yy.quadruple.quadruples.length; i++) {
         //     console.log(i + " : " + yy.quadruple.quadruples[i]);
         // }

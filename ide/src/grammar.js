@@ -425,7 +425,7 @@ const grammar = {
     "baky": [
       [
         "BAKY ID createProgram SEMICOLON vars fillGlobalMemory funcs main",
-        "\r\n        // for(let i = 0; i < yy.quadruple.quadruples.length; i++) {\r\n        //     console.log(i + \" : \" + yy.quadruple.quadruples[i]);\r\n        // }\r\n        // console.log(JSON.stringify(yy.quadruple.semantics.functionsTable, null, 4));\r\n        // console.log(yy.quadruple.semantics.memory.virtualMemory);\r\n        console.log(`Successful compilation of program ${yy.quadruple.semantics.globalName}`);\r\n    "
+        "\r\n        yy.quadruple.quadruples.push([\"end\", null, null, null]);\r\n        // for(let i = 0; i < yy.quadruple.quadruples.length; i++) {\r\n        //     console.log(i + \" : \" + yy.quadruple.quadruples[i]);\r\n        // }\r\n        // console.log(JSON.stringify(yy.quadruple.semantics.functionsTable, null, 4));\r\n        // console.log(yy.quadruple.semantics.memory.virtualMemory);\r\n        console.log(`Successful compilation of program ${yy.quadruple.semantics.globalName}`);\r\n    "
       ]
     ],
     "vars": [

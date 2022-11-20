@@ -12,10 +12,11 @@ var int i;
 function void writeArray()
 var int i;
 {
-    write("El arreglo ordenado:");
+    write("El arreglo ordenado: endl[ ");
     from i to 10 do{
-        write(arr[i]);
+        write(arr[i], " , ");
     }
+    write("]");
 }
 
 function void bubbleSort()

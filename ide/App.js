@@ -76,8 +76,6 @@ function CodeBlock({logs, setLogs, setModalVisible}) {
   }
 
   function addLog(log) {
-    console.log(log);
-    console.log(logs);
     setLogs(logs => [...logs, log]);
   }
 

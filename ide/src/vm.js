@@ -7,6 +7,7 @@ class VM {
         this.returns = new Stack();
         this.addLog = addLog;
         this.getInput = getInput;
+        this.log = "";
     }
 
     async run() {
@@ -86,9 +87,21 @@ class VM {
                     break;
                 case 'write':
                     value = memory.getValueFromAddress(quads[i][1]);
-                    this.addLog("(BAKY) " + value);
+                    this.log += value;
+                    break;
+                case 'end':
+                    if(this.log != ""){
+                        const lines = this.log.split('endl');
+                        lines.forEach(element => this.addLog("(BAKY) " + element));
+                        this.log = "";
+                    }
                     break;
                 case 'read':
+                    if(this.log != "") {
+                        const lines = this.log.split('endl');
+                        lines.forEach(element => this.addLog("(BAKY) " + element));
+                        this.log = "";
+                    }
                     type = memory.getTypeFromAddress(quads[i][1]);
                     if(type == 10) type = memory.getTypeFromAddress(memory.getValueFromPointer(quads[i][1]));
                     let error = false;
