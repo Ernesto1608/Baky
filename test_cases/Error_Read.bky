@@ -1,0 +1,8 @@
+Baky Error_Read;
+
+void Baky()
+var int s;
+{
+    //Aquí se le tiene que dar un input que no sea int
+    read(s);
+}

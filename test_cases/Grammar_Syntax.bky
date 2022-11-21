@@ -1,0 +1,14 @@
+Baky Grammar_Syntax;
+
+function int num(int n) {
+    return n+1;
+}
+
+void Baky()
+var int j;
+{
+    j = num(1);
+    if(j == 2) {
+        write("SI");
+    }
+}

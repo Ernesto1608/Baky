@@ -1,0 +1,7 @@
+Baky Error_NoIndex;
+
+void Baky()
+var int i;
+{
+    write(i[1]);
+}

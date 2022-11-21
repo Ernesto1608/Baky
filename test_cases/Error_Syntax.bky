@@ -1,0 +1,8 @@
+Baky ErrorSyntax;
+
+//Lo correcto es var int j;
+int var j;
+
+void Baky () {
+
+}

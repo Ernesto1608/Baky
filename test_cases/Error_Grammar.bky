@@ -1,0 +1,6 @@
+Baky ErrorGrammar;
+
+void Baky(){
+    // '%' no es soportado por Baky
+    %
+}

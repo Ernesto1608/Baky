@@ -1,0 +1,9 @@
+Baky Error_ForEnd;
+
+void Baky()
+var int j;
+{
+    from j to j<10 do {
+
+    }
+}

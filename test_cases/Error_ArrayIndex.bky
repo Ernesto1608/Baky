@@ -1,0 +1,7 @@
+Baky Error_ArrayIndex;
+
+void Baky()
+var int i[2];
+{
+    write(i);
+}

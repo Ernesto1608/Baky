@@ -1,0 +1,5 @@
+Baky Error_WhileEval;
+
+void Baky(){
+    while(1*3){}
+}

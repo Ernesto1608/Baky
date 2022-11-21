@@ -1,0 +1,7 @@
+Baky Error_MatrixIndex;
+
+void Baky()
+var int j[10][10];
+{
+    write(j[10]);
+}

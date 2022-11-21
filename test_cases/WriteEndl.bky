@@ -1,0 +1,9 @@
+Baky WriteEndl;
+
+void Baky()
+var string s;
+{
+    write("Ingresa tu nombre:");
+    read(s);
+    write("Tu nombre es: endl", s);
+}

@@ -1,0 +1,12 @@
+Baky Error_ExecuteReturn;
+
+function int fun(){
+    if(false){
+        //Jamás se ejecuta
+        return 1;
+    }
+}
+
+void Baky(){
+    fun();
+}

@@ -1,0 +1,16 @@
+Baky CorrectScope;
+
+var int i;
+
+function void fun()
+var int i;
+{
+    i = 10;
+    write("i local: ", i, "endl");
+}
+
+void Baky(){
+    i = 11;
+    fun();
+    write("i global: ", i, "endl");
+}

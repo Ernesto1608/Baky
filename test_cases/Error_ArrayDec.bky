@@ -1,0 +1,7 @@
+Baky Error_ArrayDec;
+
+var int j[-10];
+
+void Baky(){
+    
+}

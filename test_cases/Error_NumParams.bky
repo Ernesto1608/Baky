@@ -1,0 +1,9 @@
+Baky Error_NumParams;
+
+function int num(int n){
+    return n;
+}
+
+void Baky(){
+    write(num(1,2));
+}

@@ -1,0 +1,7 @@
+Baky Error_TooManyVar;
+
+var int i[1000][1000];
+
+void Baky(){
+    
+}

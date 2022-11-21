@@ -1,0 +1,7 @@
+Baky Error_OutOfBounds;
+
+var int i[10];
+
+void Baky(){
+    write(i[12]);
+}

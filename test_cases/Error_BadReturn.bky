@@ -1,0 +1,9 @@
+Baky Error_BadReturn;
+
+function int fun(){
+    return "s";
+}
+
+void Baky(){
+    
+}

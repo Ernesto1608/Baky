@@ -1,0 +1,9 @@
+Baky Error_VoidReturn;
+
+function void fun(){
+    return 1;
+}
+
+void Baky(){
+    
+}

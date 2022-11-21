@@ -1,0 +1,7 @@
+Baky Error_DupGlobalId;
+var int j;
+var string j;
+
+void Baky(){
+
+}

@@ -1,0 +1,13 @@
+Baky Error_DupFunc;
+
+function int fun(){
+    return 1;
+}
+
+function string fun(){
+    return "hola";
+}
+
+void Baky() {
+    
+}
