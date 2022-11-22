@@ -1,3 +1,5 @@
+// El trabajo de este archivo es manejar los cuadruplos del programa.
+
 const {Stack, Queue} = require('datastructures-js');
 const Semantics = require('./semantics.js');
 
@@ -13,6 +15,9 @@ class Quadruple {
         this.currentParameters = [];
     }
 
+    // Procesa el siguiente operador en el stack de operadores
+    // y genera un cuadruplo con los operandos y empuja el resultado a
+    // el stack de operandos con su tipo
     processOperator(operator, line) {
         const [rightO, leftO] = [this.operands.pop(), this.operands.pop()];
         const [rightT, leftT] = [this.types.pop(), this.types.pop()];
@@ -26,6 +31,8 @@ class Quadruple {
         this.operators.pop();
     }
 
+    // Si una constante ya existe agrega la direccion a el stack de operadores
+    // sino genera una direccion, la asigna el valor constante y agrega la direccion a el stack
     processConstant(value, type) {
         let address, push = true;
         if(this.semantics.constsTable[value] != undefined){
@@ -42,6 +49,7 @@ class Quadruple {
         this.types.push(type);
     }
 
+    // Procesa una assignacion y genera el cuadruplo
     processAssign(operator, line) {
         const [rightO, leftO] = [this.operands.pop(), this.operands.pop()];
         const [rightT, leftT] = [this.types.pop(), this.types.pop()];
@@ -50,6 +58,7 @@ class Quadruple {
         this.operators.pop();
     }
 
+    // Obtiene y regresa la direccion de memoria de una posicion de un arreglo
     processArray(variable, line) {
         const [rightO] = [this.operands.pop()];
         const [rightT] = [this.types.pop()];
@@ -65,6 +74,7 @@ class Quadruple {
         return address;
     }
 
+    // Obtiene y regresa la direccion de memoria de una posicion de una matriz
     processMatrix(variable) {
         const [colO, rowO] = [this.operands.pop(), this.operands.pop()];
         const [colT, rowT] = [this.types.pop(), this.types.pop()];
@@ -90,6 +100,7 @@ class Quadruple {
         return addressP;
     }
 
+    // Genera el cuadruplo de escritura
     processWrite(line) {
         const [rightO] = [this.operands.pop()];
         const [rightT] = [this.types.pop()];
@@ -97,12 +108,14 @@ class Quadruple {
         this.quadruples.push(["write", rightO, null, null]);
     }
 
+    // Genera el cuadruplo de lectura
     processRead() {
         const [rightO] = [this.operands.pop()];
         const [rightT] = [this.types.pop()];
         this.quadruples.push(["read", rightO, null, null]);
     }
 
+    // Genera el cuadruplo de salto para un if y agrega la posicion del cuadruplo al stack de saltos
     processIf(line) {
         const [rightO] = [this.operands.pop()];
         const [rightT] = [this.types.pop()];
@@ -111,21 +124,27 @@ class Quadruple {
         this.jumps.push(this.quadruples.length-1);
     }
 
+    // Genera el cuadruplo de salto para un else y agrega la posicion del cuadruplo al stack de saltos
+    // tambien llama returnIf
     processElse() {
         this.quadruples.push(["goto", null, null, null]);
         this.returnIf();
         this.jumps.push(this.quadruples.length-1);
     }
 
+    // Obtiene la posicion a donde un if tiene que saltar y la assigna al cuadruplo
     returnIf() {
         const jump = this.jumps.pop();
         this.quadruples[jump][3] = this.quadruples.length;
     }
 
+    // Guarda en el stack de saltos la posicion del cuadruplo
     storeWhile() {
         this.jumps.push(this.quadruples.length);
     }
 
+    // Utilizando los saltos assigna en las posiciones correspondientes
+    // a donde saltar para el ciclo while
     returnWhile() {
         const jumpDone = this.jumps.pop();
         const jumpWhile = this.jumps.pop();
@@ -133,6 +152,8 @@ class Quadruple {
         this.quadruples[jumpDone][3] = this.quadruples.length;
     }
 
+    // Genera la condicion del for y el cuadruplo para saltar
+    // cuando esta no se cumpla y agregar el la posicion al stack de saltos
     processFor(line) {
         const forEnd = this.operands.pop();
         const forEndT = this.types.pop();
@@ -151,6 +172,9 @@ class Quadruple {
         this.operands.push(forStart);
     }
 
+    // Le agrega 1 al contador del for, genera el salto para
+    // regresar a la condicion y asigna el salto al cuadruplo
+    // de cuando no se cumple la condicion del for.
     endFor() {
         const forStart = this.operands.pop();
         this.processConstant(1, "INT");
@@ -162,6 +186,8 @@ class Quadruple {
         this.quadruples[jumpForDone][3] = this.quadruples.length;
     }
 
+    // Assigna variables globales con los valores de los parametros,
+    // entra a la funcion y los pasa a los valores locales de los parametros
     createFunctionJump() {
         const paramsTable = this.semantics.functionsTable[this.semantics.currentFunctionCall].paramsTable;
         let temps = [];
@@ -200,6 +226,7 @@ class Quadruple {
         this.types.push(type);
     }
 
+    // Checa el numero de parametros y el tipo con la declaracion de la funcion
     createParam(line) {
         if(this.semantics.expectedParams < this.semantics.paramsCounter + 1) {
             throw new Error(`Number of parameters doesn't match function definition for ${this.currentFunctionCall} in line ${line}`);
@@ -212,6 +239,7 @@ class Quadruple {
         this.semantics.paramsCounter++;
     }
 
+    // Al terminar una funcion borrar la memoria
     returnFromFunction(scope) {
         if(!this.semantics.functionsTable[scope].return && this.semantics.functionsTable[scope].type != "VOID") {
             throw new Error(`Mising return on function '${scope}'`);
@@ -219,6 +247,7 @@ class Quadruple {
         this.quadruples.push(["popScope", null, null, null]);
     }
 
+    // Assignar el valor de retorno a una variable global
     handleReturn(line) {
         const operand = this.operands.pop();
         const type = this.types.pop();

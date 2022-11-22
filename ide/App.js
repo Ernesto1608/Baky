@@ -1,3 +1,5 @@
+// Archivo para el IDE donde se define toda el app
+
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';

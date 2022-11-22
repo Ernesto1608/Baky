@@ -1,3 +1,5 @@
+// grammar.jison en formato json
+
 const grammar = {
   "lex": {
     "rules": [

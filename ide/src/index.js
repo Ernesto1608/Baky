@@ -1,3 +1,5 @@
+// Codigo comentado para pasar de grammar.jison a un json
+
 // const path = require("path");
 // const fs = require("fs");
 // var jison2json = require('jison2json');
@@ -15,6 +17,10 @@
 // convertJison();
 
 // module.exports = { convertJison };
+
+
+// Este es el archivo principal, donde recibe el codigo
+// y hace la compilacion y ejecucion del mismo
 
 const { Parser } = require("jison");
 const Quadruple = require('./quadruple.js');

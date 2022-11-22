@@ -1,3 +1,6 @@
+// Este es el archivo principal, donde se lee que archivo tomar como input
+// y hace la compilacion y ejecucion del mismo
+
 const { Parser } = require("jison");
 const prompt = require('prompt');
 const path = require("path");

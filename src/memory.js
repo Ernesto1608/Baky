@@ -1,3 +1,7 @@
+// Archivo encargado de manejar la memoria del programa.
+// Se utiliza en compliacion para obtener las direcciones de memoria
+// y en ejecucion para acceder a la memoria.
+
 const { Stack } = require("datastructures-js");
 
 class Memory {
@@ -62,6 +66,7 @@ class Memory {
         if(address >= 15000 && address < 16000) return 10;
     }
 
+    // Llenar la memoria global con valores default
     fillGlobalMemory(resources) {
         this.virtualMemory[0] = [
             new Array(resources[0]).fill(0),
@@ -72,6 +77,7 @@ class Memory {
         ];
     }
 
+    // Agregar una memoria local al stack con valores default
     pushMemoryStack(resources) {
         this.virtualMemory[1].push([
             new Array(resources[0]).fill(0),
@@ -88,6 +94,7 @@ class Memory {
         ]);
     }
 
+    // Generar la siguiente direccion de memoria para un cierto tipo y scope
     assignMemory(scope, type, temp, size) {
         let typeMem = type;
         if(temp) typeMem = 'T' + typeMem;

@@ -2,10 +2,16 @@
   "expo": {
     "name": "ide",
     "slug": "ide",
+    "owner": "danieltre23",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "640586f8-f4d9-4565-84f0-e8d1b0aa62f1"
+      }
+    }
   },
   "name": "ide"
 }

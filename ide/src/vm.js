@@ -1,3 +1,5 @@
+// Archivo con la maquina virtual que procesa los cuadruplos
+
 const { Stack } = require("datastructures-js");
 
 class VM {
@@ -20,10 +22,9 @@ class VM {
         memory.pushMemoryStack(this.quadruple.semantics.functionsTable['Baky'].resources);
 
         let value, type;
-        //let j = 0;
+        // Ciclo para recorrer los cuadruplos
         for(let i = start; i < quads.length; i++) {
-            //j++;
-            //if(j > 100) break;
+            // Switch para procesar cada codigo de operacion
             switch(quads[i][0]) {
                 case '+':
                     value = memory.getValueFromAddress(quads[i][1]) + memory.getValueFromAddress(quads[i][2]);

@@ -1,3 +1,7 @@
+// En este archivo se manejan la memoria de compilacion para la generacion
+// de cuadruplos y recursos para memoria virtual
+// Ademas se hacen las validaciones semanticas
+
 const {Stack} = require('datastructures-js');
 const semantiConstants = require('./semantic-constants.js');
 const Memory = require('./memory.js');

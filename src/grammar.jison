@@ -1,3 +1,5 @@
+// Archivo con la gramatica y la sintaxis
+
 %lex
 %{
     if (!yy.isReady) {

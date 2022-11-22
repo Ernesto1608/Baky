@@ -1,3 +1,5 @@
+// Define las constantes de operadores y tipo
+
 const OPERATOR = Object.freeze({
     OR: '||',
     AND: '&&',
@@ -22,6 +24,7 @@ const TYPE = Object.freeze({
     BOOLEAN: 'BOOLEAN',
 });
 
+// El cubo semantico con las operaciones validas
 const CUBE = Object.freeze({
     [TYPE.INT]: {
         [TYPE.INT]: {
